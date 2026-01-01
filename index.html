@@ -3,349 +3,690 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>글로벌 헤어 코스메틱 브랜드 아카이브</title>
+    <title>글로벌 헤어 코스메틱 브랜드 BI 분석 + PikiPixi 포지셔닝</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
+
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            height: 300px;
+            height: 400px;
+            max-height: 500px;
         }
-        .card-hover:hover {
+
+        @media (max-width: 640px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        .brand-card {
+            transition: all 0.3s ease;
+        }
+
+        .brand-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        /* Custom scrollbar for better aesthetics */
+
+        .brand-card.selected {
+            border-color: #ec4899;
+            background: linear-gradient(to bottom, #fdf2f8, #ffffff);
+        }
+
+        .pikipixi-highlight {
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px rgba(236, 72, 153, 0.5);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(168, 85, 247, 0.8);
+            }
+        }
+
+        .category-badge {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-badge:hover::before {
+            left: 100%;
+        }
+
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 4px;
+            background: linear-gradient(180deg, #ec4899, #a855f7);
+            border-radius: 5px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
+
+        .insight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
-    <!-- Chosen Palette: Warm Neutrals & Earth Tones -->
-    <!-- Background: #FAFAF9 (Warm White/Stone) -->
-    <!-- Text: #1C1917 (Soft Black), #57534E (Warm Grey) -->
-    <!-- Accents: #B45309 (Amber/Gold for Luxury), #0F766E (Teal for Nature), #4F46E5 (Indigo for Science) -->
-
-    <!-- Application Structure Plan:
-        1. Header: Simple, elegant branding.
-        2. Dashboard/Overview (The "Macro" View):
-           - Introductory text explaining the landscape of hair cosmetics.
-           - Interactive "Market Theme Distribution" chart showing the balance of Science vs. Nature vs. Lifestyle in the industry.
-        3. Explorer Section (The "Micro" View):
-           - Filter controls (Category: Science, Nature, Luxury, etc.).
-           - Search bar.
-           - Grid of Brand Cards.
-        4. Detail Interaction (The "Deep Dive"):
-           - Clicking a card updates a "Focus Panel".
-           - Focus Panel shows detailed text (Slogan, Philosophy).
-           - Focus Panel includes a "Brand Identity Radar" chart visualizing the specific brand's balance of attributes.
-        Why: This structure moves from the big picture (industry trends) to specific discovery (finding a brand) to deep understanding (analyzing a specific brand's core values).
-    -->
-
-    <!-- Visualization & Content Choices:
-        1. Market Theme Distribution (Doughnut Chart):
-           - Goal: Inform/Organize. Shows the prevalence of different brand philosophies in the dataset.
-           - Interaction: Hover for counts.
-           - Justification: Provides immediate context on how the industry is segmented.
-        2. Brand Identity Radar (Radar Chart):
-           - Goal: Change/Compare. Visualizes the abstract "Vibe" of a selected brand (e.g., Is it more 'Science' or 'Nature'?).
-           - Interaction: Updates dynamically when a user clicks a brand card.
-           - Justification: Makes text-heavy "philosophy" data visual and comparable.
-        3. Brand Cards & Details:
-           - Goal: Inform.
-           - Method: HTML/Tailwind Grid.
-           - Justification: Standard, accessible way to browse catalog data.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 </head>
-<body class="bg-stone-50 text-stone-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-900">
 
-    <!-- Header -->
-    <header class="bg-white border-b border-stone-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <h1 class="text-xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
-                <span class="text-2xl">✦</span> 글로벌 헤어 코스메틱 아카이브
-            </h1>
-            <nav class="hidden md:flex gap-6 text-sm font-medium text-stone-500">
-                <a href="#dashboard" class="hover:text-stone-900 transition-colors">대시보드</a>
-                <a href="#explorer" class="hover:text-stone-900 transition-colors">브랜드 탐색</a>
-                <a href="#about" class="hover:text-stone-900 transition-colors">소개</a>
-            </nav>
+    <!-- Navigation -->
+    <nav class="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-200 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-500 rounded-lg flex items-center justify-center text-white font-black">
+                        BI
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-tight">헤어 코스메틱 브랜드 분석</h1>
+                        <p class="text-xs text-slate-500">Global Hair Care Brand Intelligence</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+                    <a href="#overview" class="hover:text-pink-500 transition">시장 개요</a>
+                    <a href="#brands" class="hover:text-pink-500 transition">브랜드 탐색</a>
+                    <a href="#positioning" class="hover:text-pink-500 transition">포지셔닝 맵</a>
+                    <a href="#pikipixi" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition">
+                        PikiPixi 분석
+                    </a>
+                </div>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="flex-grow">
-        <!-- Dashboard Section: Market Overview -->
-        <section id="dashboard" class="py-12 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
-                    <div class="lg:col-span-1 space-y-4">
-                        <h2 class="text-3xl font-bold text-stone-900">헤어 케어 시장의<br>핵심 키워드</h2>
-                        <p class="text-stone-600 leading-relaxed">
-                            전 세계를 선도하는 헤어 코스메틱 브랜드들은 각기 다른 철학을 가지고 있습니다. 
-                            데이터 분석 결과, 현대 헤어 케어 시장은 크게 <strong>과학적 효능(Science)</strong>, 
-                            <strong>자연주의(Nature)</strong>, 그리고 <strong>살롱 전문성(Professional)</strong>이라는 
-                            세 가지 큰 축으로 움직이고 있습니다.
-                        </p>
-                        <div class="bg-stone-50 p-4 rounded-lg border border-stone-100">
-                            <h3 class="text-sm font-semibold text-stone-500 uppercase mb-2">Insight</h3>
-                            <p id="insight-text" class="text-stone-800 font-medium">
-                                분석된 25개 브랜드 중 약 30%가 '과학/기술'을 핵심 가치로 내세우며, 
-                                손상모 복구와 두피 케어 솔루션에 집중하고 있습니다.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-2 bg-stone-50 rounded-xl p-6 border border-stone-100">
-                        <div class="flex flex-col md:flex-row items-center justify-center gap-8">
-                            <div class="w-full md:w-1/2">
-                                <h3 class="text-lg font-semibold text-center mb-4 text-stone-700">브랜드 철학 분포</h3>
-                                <div class="chart-container">
-                                    <canvas id="marketChart"></canvas>
-                                </div>
-                            </div>
-                            <div class="w-full md:w-1/2 text-sm space-y-3">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
-                                    <span class="font-medium">Science & Tech:</span>
-                                    <span class="text-stone-500">혁신적 기술, 특허 성분, 효능 입증 (예: Olaplex, Dyson)</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                                    <span class="font-medium">Nature & Eco:</span>
-                                    <span class="text-stone-500">식물성 성분, 지속 가능성, 윤리적 생산 (예: Aveda, Davines)</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                                    <span class="font-medium">Professional & Art:</span>
-                                    <span class="text-stone-500">살롱 헤리티지, 스타일링, 컬러 (예: L'Oréal, Vidal Sassoon)</span>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <span class="w-3 h-3 rounded-full bg-pink-500"></span>
-                                    <span class="font-medium">Lifestyle & Luxury:</span>
-                                    <span class="text-stone-500">감각적인 경험, 향, 프리미엄 (예: Oribe, Moroccanoil)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Hero Section -->
+    <section class="py-16 px-4 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="inline-block mb-4 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-bold">
+                2025 Hair Care Market Analysis
             </div>
-        </section>
+            <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                헤어 케어 시장의<br/>
+                <span class="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                    패러다임 변화
+                </span>
+            </h1>
+            <p class="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                <strong class="text-white">피부화(Skinification)</strong>와 <strong class="text-white">감각적 과학(Sensory Science)</strong>의 도래.<br/>
+                25개 글로벌 브랜드 + PikiPixi의 전략적 포지셔닝 심층 분석
+            </p>
+        </div>
+    </section>
 
-        <!-- Explorer Section -->
-        <section id="explorer" class="py-12 bg-stone-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                <div class="mb-10 text-center max-w-2xl mx-auto">
-                    <h2 class="text-2xl font-bold text-stone-900 mb-3">브랜드 탐색기</h2>
-                    <p class="text-stone-600">
-                        브랜드 카드를 클릭하여 상세 정보와 브랜드 아이덴티티 분석(BI Radar)을 확인하세요.
-                    </p>
-                </div>
-
-                <!-- Controls -->
-                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                    <!-- Filters -->
-                    <div class="flex flex-wrap gap-2 justify-center" id="filter-container">
-                        <button class="filter-btn active px-4 py-2 rounded-full text-sm font-medium bg-stone-800 text-white transition-all" data-filter="all">All</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-stone-600 border border-stone-200 hover:border-stone-400 transition-all" data-filter="Science">Science</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-stone-600 border border-stone-200 hover:border-stone-400 transition-all" data-filter="Nature">Nature</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-stone-600 border border-stone-200 hover:border-stone-400 transition-all" data-filter="Professional">Professional</button>
-                        <button class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-stone-600 border border-stone-200 hover:border-stone-400 transition-all" data-filter="Lifestyle">Lifestyle</button>
-                    </div>
-                    <!-- Search -->
-                    <div class="relative w-full md:w-64">
-                        <input type="text" id="searchInput" placeholder="브랜드명 검색..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white text-sm">
-                        <span class="absolute left-3 top-2.5 text-stone-400">🔍</span>
-                    </div>
-                </div>
-
-                <!-- Layout: Sidebar (Details) + Grid (List) -->
-                <div class="flex flex-col lg:flex-row gap-8 items-start">
-                    
-                    <!-- Detail Panel (Sticky on Desktop) -->
-                    <aside class="w-full lg:w-1/3 lg:sticky lg:top-24 order-2 lg:order-1">
-                        <div id="detail-panel" class="bg-white rounded-xl shadow-lg border border-stone-100 p-6 overflow-hidden transition-all duration-300">
-                            <!-- Default State -->
-                            <div id="detail-placeholder" class="text-center py-10 text-stone-400">
-                                <div class="text-4xl mb-4">👆</div>
-                                <p>브랜드를 선택하여<br>상세 정보를 확인하세요.</p>
-                            </div>
-
-                            <!-- Active State -->
-                            <div id="detail-content" class="hidden space-y-6">
-                                <div>
-                                    <span id="detail-category" class="inline-block px-2 py-1 bg-stone-100 text-stone-600 text-xs rounded-md mb-2 font-medium">Category</span>
-                                    <h3 id="detail-title" class="text-3xl font-bold text-stone-900 mb-1">Brand Name</h3>
-                                    <p id="detail-slogan" class="text-amber-600 font-serif italic text-lg border-l-4 border-amber-200 pl-3 my-3">"Slogan goes here"</p>
-                                </div>
-                                
-                                <div class="bg-stone-50 p-4 rounded-lg text-sm text-stone-700 leading-relaxed border border-stone-100">
-                                    <h4 class="font-bold text-stone-900 mb-2">Brand Philosophy & Identity</h4>
-                                    <p id="detail-desc">Description goes here...</p>
-                                </div>
-
-                                <div>
-                                    <h4 class="font-bold text-stone-900 mb-3 text-center text-sm">Brand Identity Radar</h4>
-                                    <div class="chart-container" style="height: 250px;">
-                                        <canvas id="radarChart"></canvas>
-                                    </div>
-                                    <p class="text-xs text-center text-stone-400 mt-2">* BI 분석을 바탕으로 한 추정치입니다.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <!-- Brand Grid -->
-                    <div class="w-full lg:w-2/3 order-1 lg:order-2">
-                        <div id="brand-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- JS will populate cards here -->
-                        </div>
-                        <div id="no-results" class="hidden text-center py-12 text-stone-500">
-                            검색 결과가 없습니다.
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section id="about" class="bg-white py-12 border-t border-stone-200">
-            <div class="max-w-3xl mx-auto px-4 text-center">
-                <h3 class="text-lg font-bold text-stone-900 mb-2">About this Archive</h3>
-                <p class="text-sm text-stone-500">
-                    본 아카이브는 전 세계 유명 헤어 코스메틱 브랜드의 BI(Brand Identity), 슬로건, 브랜드 철학을 정리한 자료를 바탕으로 제작되었습니다.<br>
-                    사용자는 각 브랜드가 추구하는 핵심 가치를 비교하고 분석할 수 있습니다.
+    <!-- Market Overview -->
+    <section id="overview" class="py-16 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black mb-4">시장 핵심 키워드</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                    현대 헤어 케어 시장은 <strong class="text-slate-900">과학적 효능(Science)</strong>, 
+                    <strong class="text-slate-900">자연주의(Nature)</strong>, 
+                    <strong class="text-slate-900">살롱 전문성(Professional)</strong>, 
+                    <strong class="text-slate-900">라이프스타일(Lifestyle)</strong>이라는 네 가지 큰 축으로 움직입니다.
                 </p>
-                <div class="mt-4 text-xs text-stone-400">
-                    Data Source: User Provided Report
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center mb-12">
+                <div>
+                    <div class="chart-container">
+                        <canvas id="marketDistributionChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div class="p-6 bg-indigo-50 rounded-xl border-l-4 border-indigo-500">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">🔬</span>
+                            <h3 class="font-bold text-indigo-900">Science & Tech (30%)</h3>
+                        </div>
+                        <p class="text-sm text-indigo-700">
+                            혁신적 기술, 특허 성분, 효능 입증 중심 (Olaplex, Dyson, Kérastase)
+                        </p>
+                    </div>
+                    <div class="p-6 bg-emerald-50 rounded-xl border-l-4 border-emerald-500">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">🌿</span>
+                            <h3 class="font-bold text-emerald-900">Nature & Eco (24%)</h3>
+                        </div>
+                        <p class="text-sm text-emerald-700">
+                            식물성 성분, 지속 가능성, 윤리적 생산 (Aveda, Davines, Kevin Murphy)
+                        </p>
+                    </div>
+                    <div class="p-6 bg-amber-50 rounded-xl border-l-4 border-amber-500">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">✂️</span>
+                            <h3 class="font-bold text-amber-900">Professional (28%)</h3>
+                        </div>
+                        <p class="text-sm text-amber-700">
+                            살롱 헤리티지, 스타일링 전문성 (Vidal Sassoon, Wella, Paul Mitchell)
+                        </p>
+                    </div>
+                    <div class="p-6 bg-pink-50 rounded-xl border-l-4 border-pink-500">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">✨</span>
+                            <h3 class="font-bold text-pink-900">Lifestyle & Luxury (18%)</h3>
+                        </div>
+                        <p class="text-sm text-pink-700">
+                            감각적 경험, 향, 프리미엄 (Oribe, Moroccanoil, Amika)
+                        </p>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
+
+            <!-- Key Insight -->
+            <div class="insight-box p-6 rounded-xl">
+                <div class="flex items-start gap-3">
+                    <span class="text-3xl">💡</span>
+                    <div>
+                        <h4 class="font-bold text-amber-900 mb-2">Market Insight</h4>
+                        <p class="text-slate-700 leading-relaxed">
+                            분석된 25개 브랜드 중 약 30%가 'Science/Tech'를 핵심 가치로 내세우며 손상모 복구와 두피 케어에 집중하고 있습니다. 
+                            반면 <strong>Science와 Lifestyle을 동시에 충족</strong>하는 브랜드는 극소수에 불과하여, 
+                            이 교차점이 <strong class="text-pink-600">PikiPixi의 Blue Ocean</strong>이 됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Explorer -->
+    <section id="brands" class="py-16 px-4 bg-slate-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black mb-4">브랜드 탐색기</h2>
+                <p class="text-lg text-slate-600">
+                    25개 글로벌 브랜드 + PikiPixi의 BI, 철학, 포지셔닝을 비교 분석합니다
+                </p>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button class="filter-btn px-5 py-2 rounded-full font-bold text-sm transition active" data-category="all">
+                    All (26)
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full font-bold text-sm transition" data-category="Science">
+                    🔬 Science (8)
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full font-bold text-sm transition" data-category="Nature">
+                    🌿 Nature (6)
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full font-bold text-sm transition" data-category="Professional">
+                    ✂️ Professional (7)
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full font-bold text-sm transition" data-category="Lifestyle">
+                    ✨ Lifestyle (5)
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div class="max-w-md mx-auto mb-8">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="브랜드명 검색..." 
+                    class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-pink-500 focus:outline-none transition"
+                />
+            </div>
+
+            <!-- Brand Grid -->
+            <div id="brandGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Brands will be populated by JavaScript -->
+            </div>
+
+            <div id="noResults" class="hidden text-center py-12 text-slate-500">
+                검색 결과가 없습니다.
+            </div>
+        </div>
+    </section>
+
+    <!-- Positioning Map -->
+    <section id="positioning" class="py-16 px-4 bg-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black mb-4">전략적 포지셔닝 맵</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                    X축: 가격/접근성 (Mass → Premium), Y축: 브랜드 드라이버 (Functional → Emotional)
+                </p>
+            </div>
+
+            <div class="bg-slate-50 p-8 rounded-2xl border-2 border-slate-200">
+                <div class="chart-container" style="height: 500px;">
+                    <canvas id="positioningMap"></canvas>
+                </div>
+                
+                <div class="grid md:grid-cols-4 gap-4 mt-8">
+                    <div class="p-4 bg-white rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                            <span class="font-bold text-sm">Clinical Zone</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            고기능/임상적 (케라스타즈, 오라플렉스)
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            <span class="font-bold text-sm">Natural Zone</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            자연주의/진정성 (아베다, 다비네스)
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <span class="font-bold text-sm">Mass Zone</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            대중적/가성비 (판틴, 헤드앤숄더)
+                        </p>
+                    </div>
+                    <div class="p-4 bg-pink-50 rounded-lg border-2 border-pink-500">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+                            <span class="font-bold text-sm">PikiPixi Zone</span>
+                        </div>
+                        <p class="text-xs text-slate-700 font-medium">
+                            Smart Luxury: Science + Magic
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PikiPixi Deep Dive -->
+    <section id="pikipixi" class="py-16 px-4 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 text-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <div class="inline-block mb-4 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold">
+                    NEW ENTRANT ANALYSIS
+                </div>
+                <h2 class="text-4xl md:text-5xl font-black mb-4">PikiPixi 전략적 포지셔닝</h2>
+                <p class="text-xl text-pink-100 max-w-3xl mx-auto">
+                    집요한 검증(Picky) + 마법 같은 경험(Pixie) = Smart Luxury의 탄생
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <!-- Competitive Advantages -->
+                <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20">
+                    <h3 class="text-2xl font-black mb-6">경쟁 우위 분석</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">🎯</span>
+                            <div>
+                                <h4 class="font-bold mb-1">Gap 1: 검증된 감성</h4>
+                                <p class="text-sm text-pink-100">
+                                    탬버린즈/논픽션보다 과학적 검증 강화. 
+                                    "예쁜데 머릿결도 좋아지는" 포지셔닝
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">📊</span>
+                            <div>
+                                <h4 class="font-bold mb-1">Gap 2: 투명한 집착</h4>
+                                <p class="text-sm text-pink-100">
+                                    케라스타즈/아베다보다 과정 투명화. 
+                                    "Rejection Log"로 신뢰 형성
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">💰</span>
+                            <div>
+                                <h4 class="font-bold mb-1">가격 전략: 스몰 럭셔리</h4>
+                                <p class="text-sm text-pink-100">
+                                    38,000-48,000원 구간. 
+                                    이솝보다 접근 가능, 롱테이크보다 프리미엄
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brand Scores -->
+                <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20">
+                    <h3 class="text-2xl font-black mb-6">브랜드 평가 점수</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-bold">Science/Innovation</span>
+                                <span class="font-mono">95/100</span>
+                            </div>
+                            <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-pink-300 to-white" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-bold">Emotional Appeal</span>
+                                <span class="font-mono">98/100</span>
+                            </div>
+                            <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-pink-300 to-white" style="width: 98%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-bold">Transparency</span>
+                                <span class="font-mono">100/100</span>
+                            </div>
+                            <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-pink-300 to-white" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-bold">Differentiation</span>
+                                <span class="font-mono">92/100</span>
+                            </div>
+                            <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-pink-300 to-white" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="font-bold">Price Competitiveness</span>
+                                <span class="font-mono">85/100</span>
+                            </div>
+                            <div class="h-3 bg-white/20 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-pink-300 to-white" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Lineup -->
+            <div class="bg-white text-slate-900 p-8 rounded-2xl">
+                <h3 class="text-2xl font-black mb-6">런칭 제품 라인업</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="border-2 border-slate-200 rounded-xl p-6 hover:border-pink-500 transition">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <span class="text-xs font-bold text-pink-500 mb-2 block">LEAVE-IN CONDITIONER</span>
+                                <h4 class="font-black text-lg">밀크 플루이드 리브인</h4>
+                            </div>
+                            <div class="text-2xl">💧</div>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-4">
+                            "바르는 순간 사라지지만 부드러움은 남는다"
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                            <div class="font-black text-xl">₩39,000</div>
+                            <div class="text-xs text-slate-500">150ml</div>
+                        </div>
+                    </div>
+                    <div class="border-2 border-slate-200 rounded-xl p-6 hover:border-amber-500 transition">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <span class="text-xs font-bold text-amber-500 mb-2 block">BI-PHASE OIL MIST</span>
+                                <h4 class="font-black text-lg">프리즘 오일 미스트</h4>
+                            </div>
+                            <div class="text-2xl">✨</div>
+                        </div>
+                        <p class="text-sm text-slate-600 mb-4">
+                            "향수는 머릿결을 망치고, 오일은 스타일을 망칩니다"
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+                            <div class="font-black text-xl">₩45,000</div>
+                            <div class="text-xs text-slate-500">100ml</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparative Radar -->
+    <section class="py-16 px-4 bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-black mb-4">브랜드 아키타입 비교</h2>
+                <p class="text-lg text-slate-600">
+                    PikiPixi vs 주요 경쟁사의 브랜드 성격 6축 분석
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl border-2 border-slate-200">
+                <div class="chart-container" style="height: 450px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="mb-6">
+                <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-500 rounded-xl mx-auto mb-4 flex items-center justify-center text-white font-black text-xl">
+                    BI
+                </div>
+                <p class="text-sm">
+                    Global Hair Cosmetic Brand Intelligence Report 2025
+                </p>
+            </div>
+            <div class="text-xs text-slate-500">
+                <p>© 2025 Hair Care Market Analysis. Based on strategic brand research.</p>
+                <p class="mt-2 font-mono">
+                    Total Brands Analyzed: 26 (25 Global + 1 New Entrant)
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        // --- DATA ---
-        // Categories inferred from description: 
-        // 0: Science (Tech/Repair), 1: Nature (Eco/Organic), 2: Professional (Salon/Art), 3: Lifestyle (Luxury/Scent/Daily)
-        
+        // Brand Data
         const brands = [
-            { name: "L'Oréal Paris", slogan: "당신은 소중하니까요 (Because You're Worth It)", desc: "여성의 자존감을 고취하고, 누구나 접근 가능한 럭셔리 뷰티를 지향함.", category: "Professional", stats: [60, 30, 90, 80] }, // Sci, Nat, Pro, Life
-            { name: "Kérastase", slogan: "Very Personal Care for Exceptional Hair", desc: "로레알 그룹의 럭셔리 프로페셔널 브랜드. 과학적인 진단과 맞춤형 솔루션을 제공하는 헤어 케어의 명품.", category: "Science", stats: [95, 20, 90, 85] },
-            { name: "Aveda", slogan: "우리가 사는 이 세상을 보호하는 것", desc: "고대 인도 의학 아유르베다에 뿌리를 둔 '꽃과 식물의 과학'. 친환경과 지속 가능성(Sustainability)이 핵심 가치.", category: "Nature", stats: [40, 95, 70, 60] },
-            { name: "Olaplex", slogan: "One Ingredient changes everything", desc: "핵심 기술: '본드 빌딩(Bond Building)'. 손상된 모발 내부의 끊어진 이황화 결합을 복구하는 과학적 솔루션. '모발을 위한 보험'이라는 별칭.", category: "Science", stats: [100, 10, 80, 50] },
-            { name: "Moroccanoil", slogan: "Argan Oil Infused Beauty", desc: "시그니처: 아르간 오일 & 청록색(Teal) 패키지. 모든 제품에 항산화 성분이 풍부한 아르간 오일을 주성분으로 사용하며, 특유의 향이 브랜드의 상징임.", category: "Lifestyle", stats: [30, 70, 60, 95] },
-            { name: "Schwarzkopf", slogan: "Together. A passion for hair", desc: "120년 이상의 역사를 가진 독일 브랜드. 검은 머리(Black Head) 로고가 상징이며 헤어 드레싱 기술과 혁신의 선두주자.", category: "Professional", stats: [70, 20, 95, 60] },
-            { name: "Redken", slogan: "Science. Fashion. Inspiration.", desc: "단백질 기반의 과학과 뉴욕의 패션 감성을 결합한 브랜드. pH 밸런스(약산성)의 중요성을 강조함.", category: "Science", stats: [85, 20, 80, 75] },
-            { name: "Pantene", slogan: "Strong is Beautiful", desc: "핵심 성분: 프로비타민 B5 (Pro-V). 모발의 건강과 강인함을 최우선 가치로 둠.", category: "Lifestyle", stats: [60, 30, 50, 80] }, // Mass market acts as lifestyle/daily
-            { name: "Oribe", slogan: "#OribeObsessed", desc: "전설적인 헤어 스타일리스트 오리베가 만든 럭셔리 브랜드. 스킨케어 수준의 성분과 고급 향수 같은 '코트 다쥐르' 향이 특징.", category: "Lifestyle", stats: [50, 40, 90, 100] },
-            { name: "Davines", slogan: "Sustainable Beauty", desc: "이탈리아 파르마에서 시작된 가족 경영 브랜드. 자연 친화적 성분과 윤리적 생산, 생물 다양성 보존을 강조.", category: "Nature", stats: [30, 95, 70, 80] },
-            { name: "Vidal Sassoon", slogan: "If you don't look good, we don't look good", desc: "'Wash and Go' 철학을 탄생시킨 헤어 컷의 혁명가. 기하학적이고 구조적인 스타일링을 강조.", category: "Professional", stats: [50, 10, 100, 60] },
-            { name: "René Furterer", slogan: "아름다운 모발은 건강한 두피에서 자란다", desc: "식물성 에센셜 오일을 기반으로 한 두피 케어 전문 브랜드. 식물학과 제약 기술의 결합.", category: "Nature", stats: [70, 90, 70, 50] },
-            { name: "Kevin Murphy", slogan: "Skincare for your hair", desc: "무게감 없이 성능을 발휘하는 제품력. 해양 플라스틱을 재활용한 용기(OWP) 등 환경 보호에 적극적임.", category: "Nature", stats: [60, 85, 80, 70] },
-            { name: "Joico", slogan: "The Joi of Healthy Hair", desc: "건강한 모발이 주는 기쁨을 강조. 손상모 복구 기술과 선명한 컬러 유지 기술에 강점이 있음.", category: "Science", stats: [80, 20, 70, 60] },
-            { name: "Living Proof", slogan: "We are the science. You are the living proof.", desc: "MIT 과학자들이 설립. 특허 받은 분자 성분을 통해 실제 눈에 보이는 효과를 증명한다는 과학 중심 브랜드.", category: "Science", stats: [100, 10, 60, 50] },
-            { name: "Head & Shoulders", slogan: "비듬 걱정 없는 세상", desc: "세계 1위 비듬 샴푸 브랜드. 두피 건강을 통한 자신감 회복을 강조.", category: "Science", stats: [70, 20, 40, 80] }, // Functional/Science driven
-            { name: "Dyson Beauty", slogan: "과도한 열 손상 없이 스타일링", desc: "모터 기술과 공기 역학(코안다 효과)을 이용한 혁신적인 엔지니어링으로 모발 건강을 최우선으로 함.", category: "Science", stats: [100, 0, 80, 90] },
-            { name: "Bumble and bumble", slogan: "뉴욕의 살롱 헤리티지", desc: "백스테이지 스타일링과 편집샵 감성. 혁신적인 텍스처 제품과 자유분방한 크리에이티브를 강조.", category: "Lifestyle", stats: [40, 20, 90, 90] },
-            { name: "Briogeo", slogan: "Clean, High-Performance Hair Care", desc: "6-Free (유해 성분 배제)를 내세운 클린 뷰티 브랜드. 다양한 모발 타입과 질감에 맞는 맞춤형 솔루션 제공.", category: "Nature", stats: [60, 90, 50, 70] },
-            { name: "Amika", slogan: "All Hair is Welcome", desc: "화려하고 펑키한 패키지 디자인. 전문적인 품질이지만 누구나 쉽게 접근할 수 있는 즐거운 브랜드 이미지를 지향.", category: "Lifestyle", stats: [40, 30, 70, 95] },
-            { name: "Paul Mitchell", slogan: "Live Beautifully", desc: "동물 실험 반대의 선구자적 브랜드. 미용사들을 위한 전문적인 교육과 고품질 제품 지원에 집중.", category: "Professional", stats: [50, 60, 95, 60] },
-            { name: "Wella Professionals", slogan: "Make Change", desc: "140년 전통의 독일 브랜드. 특히 헤어 컬러 분야의 혁신과 전문가 교육 프로그램으로 유명함.", category: "Professional", stats: [70, 10, 95, 50] },
-            { name: "TRESemmé", slogan: "Used by Professionals", desc: "살롱 퀄리티의 제품을 합리적인 가격에 제공하여 집에서도 전문가의 손길을 느끼게 한다는 컨셉.", category: "Lifestyle", stats: [50, 10, 80, 80] }, // Mass but positions as Pro/Lifestyle
-            { name: "Matrix", slogan: "Imagine All You Can Be", desc: "미국에서 가장 대중적인 프로페셔널 브랜드 중 하나. 다양성과 포용성을 강조하며 접근하기 쉬운 전문가 제품을 지향.", category: "Professional", stats: [50, 20, 90, 70] },
-            { name: "Shiseido Professional", slogan: "Omotenashi 기반의 아시안 뷰티", desc: "아시아인의 모발 특성에 최적화된 연구. 서브리믹(Sublimic) 라인 등을 통해 내면의 아름다움을 이끌어냄.", category: "Professional", stats: [80, 40, 90, 70] }
+            // Science Category
+            { name: "Kérastase", category: "Science", slogan: "Very Personal Care for Exceptional Hair", desc: "로레알 그룹의 럭셔리 프로페셔널 브랜드. 과학적 진단과 맞춤형 솔루션.", price: 70, emotion: 85, stats: [95, 20, 90, 85, 70, 80] },
+            { name: "Olaplex", category: "Science", slogan: "One Ingredient changes everything", desc: "본드 빌딩 기술로 손상모 복구의 혁명을 일으킨 과학적 솔루션.", price: 75, emotion: 50, stats: [100, 10, 80, 50, 65, 60] },
+            { name: "Redken", category: "Science", slogan: "Science. Fashion. Inspiration.", desc: "단백질 기반 과학과 뉴욕 패션 감성의 결합.", price: 60, emotion: 75, stats: [85, 20, 80, 75, 70, 75] },
+            { name: "Living Proof", category: "Science", slogan: "We are the science. You are the living proof.", desc: "MIT 과학자들이 설립한 특허 분자 기술 브랜드.", price: 70, emotion: 50, stats: [100, 10, 60, 50, 60, 55] },
+            { name: "Head & Shoulders", category: "Science", slogan: "비듬 걱정 없는 세상", desc: "세계 1위 비듬 샴푸. 두피 건강 중심.", price: 20, emotion: 80, stats: [70, 20, 40, 80, 85, 65] },
+            { name: "Dyson Beauty", category: "Science", slogan: "과도한 열 손상 없이 스타일링", desc: "모터 기술과 공기 역학을 이용한 혁신적 엔지니어링.", price: 85, emotion: 90, stats: [100, 0, 80, 90, 50, 85] },
+            { name: "Joico", category: "Science", slogan: "The Joi of Healthy Hair", desc: "손상모 복구 기술과 컬러 유지 기술에 강점.", price: 55, emotion: 60, stats: [80, 20, 70, 60, 65, 65] },
+            { name: "Shiseido Pro", category: "Science", slogan: "Omotenashi 기반의 아시안 뷰티", desc: "아시아인 모발에 최적화된 연구.", price: 65, emotion: 70, stats: [80, 40, 90, 70, 60, 75] },
+
+            // Nature Category
+            { name: "Aveda", category: "Nature", slogan: "우리가 사는 이 세상을 보호하는 것", desc: "아유르베다 철학 기반. 친환경과 지속가능성이 핵심.", price: 70, emotion: 60, stats: [40, 95, 70, 60, 65, 70] },
+            { name: "Davines", category: "Nature", slogan: "Sustainable Beauty", desc: "이탈리아 파르마에서 시작된 가족 경영 브랜드. 윤리적 생산.", price: 75, emotion: 80, stats: [30, 95, 70, 80, 60, 85] },
+            { name: "Kevin Murphy", category: "Nature", slogan: "Skincare for your hair", desc: "무게감 없는 성능. 해양 플라스틱 재활용 용기 사용.", price: 68, emotion: 70, stats: [60, 85, 80, 70, 65, 75] },
+            { name: "René Furterer", category: "Nature", slogan: "아름다운 모발은 건강한 두피에서", desc: "식물성 에센셜 오일 기반 두피 케어 전문.", price: 62, emotion: 50, stats: [70, 90, 70, 50, 60, 60] },
+            { name: "Briogeo", category: "Nature", slogan: "Clean, High-Performance Hair Care", desc: "6-Free 클린 뷰티. 다양한 모발 타입 맞춤형.", price: 50, emotion: 70, stats: [60, 90, 50, 70, 70, 70] },
+            { name: "Paul Mitchell", category: "Nature", slogan: "Live Beautifully", desc: "동물 실험 반대의 선구자. 미용사 교육 중심.", price: 55, emotion: 60, stats: [50, 60, 95, 60, 70, 65] },
+
+            // Professional Category
+            { name: "L'Oréal Paris", category: "Professional", slogan: "당신은 소중하니까요", desc: "여성의 자존감 고취. 접근 가능한 럭셔리.", price: 45, emotion: 80, stats: [60, 30, 90, 80, 80, 75] },
+            { name: "Schwarzkopf", category: "Professional", slogan: "Together. A passion for hair", desc: "120년 역사의 독일 브랜드. 헤어 드레싱 기술 선도.", price: 58, emotion: 60, stats: [70, 20, 95, 60, 70, 65] },
+            { name: "Vidal Sassoon", category: "Professional", slogan: "If you don't look good, we don't look good", desc: "Wash and Go 철학. 기하학적 스타일링.", price: 40, emotion: 60, stats: [50, 10, 100, 60, 75, 70] },
+            { name: "Wella", category: "Professional", slogan: "Make Change", desc: "140년 전통. 헤어 컬러 분야 혁신.", price: 60, emotion: 50, stats: [70, 10, 95, 50, 70, 60] },
+            { name: "Matrix", category: "Professional", slogan: "Imagine All You Can Be", desc: "다양성과 포용성 강조. 접근하기 쉬운 전문가 제품.", price: 50, emotion: 70, stats: [50, 20, 90, 70, 80, 70] },
+            { name: "Bumble and bumble", category: "Professional", slogan: "뉴욕의 살롱 헤리티지", desc: "백스테이지 스타일링. 편집샵 감성.", price: 65, emotion: 90, stats: [40, 20, 90, 90, 65, 85] },
+            { name: "TRESemmé", category: "Professional", slogan: "Used by Professionals", desc: "살롱 퀄리티를 합리적 가격에.", price: 30, emotion: 80, stats: [50, 10, 80, 80, 85, 70] },
+
+            // Lifestyle Category
+            { name: "Oribe", category: "Lifestyle", slogan: "#OribeObsessed", desc: "전설적 스타일리스트 오리베의 럭셔리 브랜드. 코트 다쥐르 향.", price: 80, emotion: 100, stats: [50, 40, 90, 100, 55, 95] },
+            { name: "Moroccanoil", category: "Lifestyle", slogan: "Argan Oil Infused Beauty", desc: "아르간 오일 시그니처. 청록색 패키지와 특유의 향.", price: 60, emotion: 95, stats: [30, 70, 60, 95, 75, 90] },
+            { name: "Pantene", category: "Lifestyle", slogan: "Strong is Beautiful", desc: "프로비타민 B5. 모발의 건강과 강인함.", price: 25, emotion: 80, stats: [60, 30, 50, 80, 90, 75] },
+            { name: "Amika", category: "Lifestyle", slogan: "All Hair is Welcome", desc: "화려한 펑키 패키지. 즐거운 브랜드 이미지.", price: 48, emotion: 95, stats: [40, 30, 70, 95, 75, 90] },
+
+            // PikiPixi - NEW ENTRANT
+            { 
+                name: "PikiPixi ⭐", 
+                category: "PikiPixi", 
+                slogan: "Obsessively Picky, Delightfully Pixie", 
+                desc: "집요한 검증(Picky) + 마법 같은 경험(Pixie). Science meets Magic의 Blue Ocean 전략. 99번의 거절 끝에 탄생한 완벽함. 리브인 컨디셔너 ₩39,000 / 오일 미스트 ₩45,000", 
+                price: 70, 
+                emotion: 95, 
+                stats: [95, 50, 85, 98, 70, 95],
+                isPikiPixi: true
+            }
         ];
 
-        // Stats Key: [Science/Tech, Nature/Eco, Professional/Art, Lifestyle/Appeal]
-
-        // --- STATE MANAGEMENT ---
+        // State
         let currentFilter = 'all';
-        let searchQuery = '';
-        let selectedBrand = null;
-        let radarChartInstance = null;
-        let marketChartInstance = null;
+        let currentSearch = '';
 
-        // --- DOM ELEMENTS ---
-        const gridEl = document.getElementById('brand-grid');
-        const filterBtns = document.querySelectorAll('.filter-btn');
+        // DOM Elements
+        const brandGrid = document.getElementById('brandGrid');
         const searchInput = document.getElementById('searchInput');
-        const noResultsEl = document.getElementById('no-results');
-        
-        const detailPanel = document.getElementById('detail-panel');
-        const detailPlaceholder = document.getElementById('detail-placeholder');
-        const detailContent = document.getElementById('detail-content');
-        
-        const dCategory = document.getElementById('detail-category');
-        const dTitle = document.getElementById('detail-title');
-        const dSlogan = document.getElementById('detail-slogan');
-        const dDesc = document.getElementById('detail-desc');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const noResults = document.getElementById('noResults');
 
-        // --- INITIALIZATION ---
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            initMarketChart();
-            renderGrid();
+            renderBrands();
+            initCharts();
             
-            // Interaction Listeners
+            // Event Listeners
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    // Update UI
-                    filterBtns.forEach(b => {
-                        b.classList.remove('bg-stone-800', 'text-white');
-                        b.classList.add('bg-white', 'text-stone-600', 'border');
-                    });
-                    e.target.classList.remove('bg-white', 'text-stone-600', 'border');
-                    e.target.classList.add('bg-stone-800', 'text-white');
-
-                    // Update State
-                    currentFilter = e.target.dataset.filter;
-                    renderGrid();
+                    filterBtns.forEach(b => b.classList.remove('active', 'bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white'));
+                    filterBtns.forEach(b => b.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200'));
+                    
+                    e.target.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+                    e.target.classList.add('active', 'bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white');
+                    
+                    currentFilter = e.target.dataset.category;
+                    renderBrands();
                 });
             });
 
             searchInput.addEventListener('input', (e) => {
-                searchQuery = e.target.value.toLowerCase();
-                renderGrid();
+                currentSearch = e.target.value.toLowerCase();
+                renderBrands();
             });
+
+            // Set initial active state
+            filterBtns[0].classList.add('bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white');
         });
 
-        // --- FUNCTIONS ---
+        // Render Brands
+        function renderBrands() {
+            const filtered = brands.filter(b => {
+                const matchesFilter = currentFilter === 'all' || b.category === currentFilter;
+                const matchesSearch = b.name.toLowerCase().includes(currentSearch) || 
+                                     b.desc.toLowerCase().includes(currentSearch) ||
+                                     b.slogan.toLowerCase().includes(currentSearch);
+                return matchesFilter && matchesSearch;
+            });
 
-        function initMarketChart() {
-            const ctx = document.getElementById('marketChart').getContext('2d');
-            
-            // Calculate distribution
-            const counts = { Science: 0, Nature: 0, Professional: 0, Lifestyle: 0 };
-            brands.forEach(b => counts[b.category]++);
+            if (filtered.length === 0) {
+                brandGrid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
 
-            marketChartInstance = new Chart(ctx, {
+            noResults.classList.add('hidden');
+            brandGrid.innerHTML = filtered.map(brand => createBrandCard(brand)).join('');
+        }
+
+        // Create Brand Card
+        function createBrandCard(brand) {
+            const categoryColors = {
+                'Science': 'bg-indigo-100 text-indigo-800',
+                'Nature': 'bg-emerald-100 text-emerald-800',
+                'Professional': 'bg-amber-100 text-amber-800',
+                'Lifestyle': 'bg-pink-100 text-pink-800',
+                'PikiPixi': 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+            };
+
+            const categoryEmojis = {
+                'Science': '🔬',
+                'Nature': '🌿',
+                'Professional': '✂️',
+                'Lifestyle': '✨',
+                'PikiPixi': '⭐'
+            };
+
+            const cardClass = brand.isPikiPixi ? 'pikipixi-highlight' : 'bg-white';
+            const textClass = brand.isPikiPixi ? 'text-white' : 'text-slate-900';
+            const descClass = brand.isPikiPixi ? 'text-pink-50' : 'text-slate-600';
+
+            return `
+                <div class="brand-card ${cardClass} p-6 rounded-xl border-2 ${brand.isPikiPixi ? 'border-pink-500' : 'border-slate-200'} cursor-pointer">
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="category-badge px-3 py-1 rounded-full text-xs font-bold ${categoryColors[brand.category]}">
+                            ${categoryEmojis[brand.category]} ${brand.category}
+                        </span>
+                        ${brand.isPikiPixi ? '<span class="text-2xl">🆕</span>' : ''}
+                    </div>
+                    <h3 class="text-xl font-black ${textClass} mb-2">${brand.name}</h3>
+                    <p class="text-sm ${brand.isPikiPixi ? 'text-pink-100' : 'text-slate-500'} mb-3 italic">"${brand.slogan}"</p>
+                    <p class="text-sm ${descClass} leading-relaxed line-clamp-3">${brand.desc}</p>
+                    ${brand.isPikiPixi ? `
+                        <div class="mt-4 pt-4 border-t border-pink-300">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-bold text-pink-100">런칭 가격대</span>
+                                <span class="text-lg font-black text-white">₩39K - ₩45K</span>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Initialize Charts
+        function initCharts() {
+            // 1. Market Distribution Chart
+            const marketCtx = document.getElementById('marketDistributionChart').getContext('2d');
+            const categoryCounts = {
+                'Science': brands.filter(b => b.category === 'Science').length,
+                'Nature': brands.filter(b => b.category === 'Nature').length,
+                'Professional': brands.filter(b => b.category === 'Professional').length,
+                'Lifestyle': brands.filter(b => b.category === 'Lifestyle').length
+            };
+
+            new Chart(marketCtx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Science & Tech', 'Nature & Eco', 'Professional', 'Lifestyle'],
                     datasets: [{
-                        data: [counts.Science, counts.Nature, counts.Professional, counts.Lifestyle],
-                        backgroundColor: [
-                            '#6366f1', // Indigo (Science)
-                            '#10b981', // Emerald (Nature)
-                            '#f59e0b', // Amber (Professional)
-                            '#ec4899'  // Pink (Lifestyle)
-                        ],
+                        data: [categoryCounts.Science, categoryCounts.Nature, categoryCounts.Professional, categoryCounts.Lifestyle],
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899'],
                         borderWidth: 0,
-                        hoverOffset: 4
+                        hoverOffset: 10
                     }]
                 },
                 options: {
@@ -356,8 +697,149 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return ` ${context.label}: ${context.raw} Brands`;
+                                    const total = brands.length - 1; // Exclude PikiPixi
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return ` ${context.label}: ${context.parsed}개 (${percentage}%)`;
                                 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Positioning Map
+            const posCtx = document.getElementById('positioningMap').getContext('2d');
+            
+            const datasets = brands.map(brand => {
+                let color, size;
+                if (brand.isPikiPixi) {
+                    color = 'rgba(236, 72, 153, 1)';
+                    size = 20;
+                } else if (brand.category === 'Science') {
+                    color = 'rgba(59, 130, 246, 0.7)';
+                    size = 10;
+                } else if (brand.category === 'Nature') {
+                    color = 'rgba(16, 185, 129, 0.7)';
+                    size = 10;
+                } else if (brand.category === 'Professional') {
+                    color = 'rgba(245, 158, 11, 0.7)';
+                    size = 10;
+                } else {
+                    color = 'rgba(236, 72, 153, 0.7)';
+                    size = 10;
+                }
+
+                return {
+                    label: brand.name,
+                    data: [{ x: brand.price, y: brand.emotion }],
+                    backgroundColor: color,
+                    borderColor: brand.isPikiPixi ? '#ec4899' : color,
+                    borderWidth: brand.isPikiPixi ? 3 : 1,
+                    pointRadius: size,
+                    pointHoverRadius: size + 5
+                };
+            });
+
+            new Chart(posCtx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: 가격 ${context.parsed.x}, 감성 ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { 
+                                display: true, 
+                                text: '가격 및 접근성 (Low → High) →',
+                                font: { weight: 'bold', size: 13 }
+                            },
+                            min: 0, max: 100,
+                            grid: { color: 'rgba(100, 116, 139, 0.1)' }
+                        },
+                        y: {
+                            title: { 
+                                display: true, 
+                                text: '브랜드 드라이버 (Functional → Emotional) →',
+                                font: { weight: 'bold', size: 13 }
+                            },
+                            min: 0, max: 100,
+                            grid: { color: 'rgba(100, 116, 139, 0.1)' }
+                        }
+                    }
+                }
+            });
+
+            // 3. Radar Chart - PikiPixi vs Competitors
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            
+            // Select key competitors for comparison
+            const compareBrands = [
+                brands.find(b => b.name === 'PikiPixi ⭐'),
+                brands.find(b => b.name === 'Kérastase'),
+                brands.find(b => b.name === 'Oribe'),
+                brands.find(b => b.name === 'Aveda')
+            ];
+
+            const radarDatasets = compareBrands.map((brand, index) => {
+                const colors = [
+                    { bg: 'rgba(236, 72, 153, 0.2)', border: '#ec4899' }, // PikiPixi
+                    { bg: 'rgba(59, 130, 246, 0.1)', border: '#3b82f6' }, // Kérastase
+                    { bg: 'rgba(245, 158, 11, 0.1)', border: '#f59e0b' }, // Oribe
+                    { bg: 'rgba(16, 185, 129, 0.1)', border: '#10b981' }  // Aveda
+                ];
+
+                return {
+                    label: brand.name,
+                    data: brand.stats,
+                    fill: true,
+                    backgroundColor: colors[index].bg,
+                    borderColor: colors[index].border,
+                    pointBackgroundColor: colors[index].border,
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: colors[index].border,
+                    borderWidth: brand.isPikiPixi ? 3 : 2
+                };
+            });
+
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['혁신성', '자연/윤리', '전문성', '감성/재미', '가격경쟁력', '심미성'],
+                    datasets: radarDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(100, 116, 139, 0.2)' },
+                            grid: { color: 'rgba(100, 116, 139, 0.2)' },
+                            pointLabels: {
+                                font: { size: 13, weight: 'bold' },
+                                color: '#475569'
+                            },
+                            ticks: { display: false },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12 }
                             }
                         }
                     }
@@ -365,133 +847,16 @@
             });
         }
 
-        function renderGrid() {
-            gridEl.innerHTML = '';
-            
-            const filtered = brands.filter(b => {
-                const matchesFilter = currentFilter === 'all' || b.category === currentFilter;
-                const matchesSearch = b.name.toLowerCase().includes(searchQuery) || b.desc.toLowerCase().includes(searchQuery);
-                return matchesFilter && matchesSearch;
-            });
-
-            if (filtered.length === 0) {
-                noResultsEl.classList.remove('hidden');
-            } else {
-                noResultsEl.classList.add('hidden');
-                
-                filtered.forEach(brand => {
-                    const card = document.createElement('div');
-                    card.className = `card-hover bg-white p-5 rounded-lg border border-stone-200 cursor-pointer transition-all ${selectedBrand && selectedBrand.name === brand.name ? 'ring-2 ring-stone-800 bg-stone-50' : ''}`;
-                    
-                    // Determine category color tag
-                    let catColor = "bg-stone-200 text-stone-700";
-                    if(brand.category === 'Science') catColor = "bg-indigo-100 text-indigo-800";
-                    if(brand.category === 'Nature') catColor = "bg-emerald-100 text-emerald-800";
-                    if(brand.category === 'Professional') catColor = "bg-amber-100 text-amber-800";
-                    if(brand.category === 'Lifestyle') catColor = "bg-pink-100 text-pink-800";
-
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-xs font-bold px-2 py-1 rounded ${catColor}">${brand.category}</span>
-                            <span class="text-stone-400 text-xs">More ></span>
-                        </div>
-                        <h3 class="text-lg font-bold text-stone-900 mb-1">${brand.name}</h3>
-                        <p class="text-xs text-stone-500 line-clamp-2">${brand.slogan}</p>
-                    `;
-
-                    card.addEventListener('click', () => selectBrand(brand));
-                    gridEl.appendChild(card);
-                });
-            }
-        }
-
-        function selectBrand(brand) {
-            selectedBrand = brand;
-            renderGrid(); // Re-render to highlight selection
-
-            // Switch panel view
-            detailPlaceholder.classList.add('hidden');
-            detailContent.classList.remove('hidden');
-
-            // Populate Text
-            dTitle.innerText = brand.name;
-            dSlogan.innerText = `"${brand.slogan}"`;
-            dDesc.innerText = brand.desc;
-            dCategory.innerText = brand.category;
-            
-            // Style Category Label
-            dCategory.className = "inline-block px-2 py-1 text-xs rounded-md mb-2 font-bold ";
-            if(brand.category === 'Science') dCategory.classList.add("bg-indigo-100", "text-indigo-800");
-            else if(brand.category === 'Nature') dCategory.classList.add("bg-emerald-100", "text-emerald-800");
-            else if(brand.category === 'Professional') dCategory.classList.add("bg-amber-100", "text-amber-800");
-            else dCategory.classList.add("bg-pink-100", "text-pink-800");
-
-            // Update Radar Chart
-            updateRadarChart(brand);
-
-            // Scroll to panel on mobile
-            if (window.innerWidth < 1024) {
-                detailPanel.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        function updateRadarChart(brand) {
-            const ctx = document.getElementById('radarChart').getContext('2d');
-            
-            if (radarChartInstance) {
-                radarChartInstance.destroy();
-            }
-
-            radarChartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Science/Tech', 'Nature/Eco', 'Professional', 'Trendy/Luxury'],
-                    datasets: [{
-                        label: brand.name,
-                        data: brand.stats,
-                        fill: true,
-                        backgroundColor: 'rgba(68, 64, 60, 0.2)', // Stone-700 low opacity
-                        borderColor: 'rgba(68, 64, 60, 1)',
-                        pointBackgroundColor: 'rgba(68, 64, 60, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(68, 64, 60, 1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            angleLines: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            pointLabels: {
-                                font: {
-                                    size: 11,
-                                    family: "'Noto Sans KR', sans-serif"
-                                },
-                                color: '#57534E'
-                            },
-                            ticks: {
-                                display: false, // Hide 0-100 numbers for cleaner look
-                                max: 100,
-                                min: 0
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 100
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
-        }
-
+        });
     </script>
 </body>
 </html>
