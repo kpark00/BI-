@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PikiPixi | 집요한 검증, 마법 같은 경험</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        .font-mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Holographic effect */
+        .holographic {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 75%, #764ba2 100%);
+            background-size: 400% 400%;
+            animation: holographic 8s ease infinite;
+        }
+
+        @keyframes holographic {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Lab aesthetic */
+        .lab-grid {
+            background-image: 
+                linear-gradient(rgba(100, 116, 139, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 116, 139, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Rejection bin animation */
+        .rejected-sample {
+            animation: reject 0.5s ease-out;
+        }
+
+        @keyframes reject {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(50px) rotate(15deg); opacity: 0; }
+        }
+
+        /* Bi-phase visual */
+        .bi-phase {
+            background: linear-gradient(to bottom, 
+                rgba(236, 72, 153, 0.3) 0%, 
+                rgba(236, 72, 153, 0.3) 40%,
+                transparent 40%,
+                transparent 60%,
+                rgba(251, 191, 36, 0.3) 60%,
+                rgba(251, 191, 36, 0.3) 100%
+            );
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F5F7FA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ec4899, #a855f7);
+            border-radius: 5px;
+        }
+
+        /* Picky badge */
+        .picky-badge {
+            position: relative;
+            overflow: hidden;
+        }
+        .picky-badge::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* Chart containers */
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-[#F5F7FA] text-slate-900">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 holographic rounded-lg"></div>
+                    <span class="text-2xl font-black tracking-tight">
+                        <span class="text-slate-900">piki</span><span class="text-pink-500">pixi</span>
+                    </span>
+                </div>
+                <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                    <a href="#philosophy" class="hover:text-pink-500 transition">브랜드 철학</a>
+                    <a href="#products" class="hover:text-pink-500 transition">제품</a>
+                    <a href="#science" class="hover:text-pink-500 transition">The Lab</a>
+                    <a href="#positioning" class="hover:text-pink-500 transition">포지셔닝</a>
+                    <button class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-pink-500 transition">
+                        피키 패널 신청
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 relative overflow-hidden">
+        <div class="absolute inset-0 lab-grid opacity-30"></div>
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="text-center mb-12">
+                <div class="inline-block mb-6">
+                    <span class="px-4 py-2 bg-pink-100 text-pink-600 rounded-full text-sm font-bold">
+                        99번의 거절 끝에 탄생한 완벽함
+                    </span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                    집요한 검증,<br/>
+                    <span class="holographic bg-clip-text text-transparent">마법 같은 경험</span>
+                </h1>
+                <p class="text-xl text-slate-600 max-w-3xl mx-auto mb-8 leading-relaxed">
+                    <strong class="text-slate-900">Obsessively Picky, Delightfully Pixie.</strong><br/>
+                    피키픽시는 현미경으로 들여다보는 엄격함(Picky) 끝에 찾아오는 마법 같은 경험(Pixie)을 선사합니다.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <div class="px-6 py-3 bg-slate-900 text-white rounded-lg font-bold flex items-center gap-2">
+                        <span>🔬</span>
+                        <span>Science</span>
+                    </div>
+                    <div class="px-6 py-3 text-4xl">+</div>
+                    <div class="px-6 py-3 bg-pink-500 text-white rounded-lg font-bold flex items-center gap-2">
+                        <span>✨</span>
+                        <span>Magic</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Counter -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 text-center">
+                    <div class="text-4xl font-black text-pink-500 mb-2">100+</div>
+                    <div class="text-sm text-slate-600">테스트된 샘플</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 text-center">
+                    <div class="text-4xl font-black text-pink-500 mb-2">99%</div>
+                    <div class="text-sm text-slate-600">폐기된 시제품</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 text-center">
+                    <div class="text-4xl font-black text-pink-500 mb-2">20+</div>
+                    <div class="text-sm text-slate-600">배제된 주의성분</div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border-2 border-slate-200 text-center">
+                    <div class="text-4xl font-black text-pink-500 mb-2">0.5cp</div>
+                    <div class="text-sm text-slate-600">점도 오차 허용치</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Philosophy Section -->
+    <section id="philosophy" class="py-20 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-black text-center mb-16">브랜드 철학: 100번째 샘플의 전설</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 mb-16">
+                <!-- Picky Side -->
+                <div class="bg-slate-900 text-white p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 text-[200px] font-black opacity-5">P</div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-2xl">
+                                🔬
+                            </div>
+                            <h3 class="text-3xl font-black">PICKY</h3>
+                        </div>
+                        <p class="text-slate-300 mb-6 leading-relaxed">
+                            <strong class="text-white">집요한 선별 (Pickiness)</strong>은 부정적인 성격 특성이 아닌, 
+                            소비자를 대신하여 수행하는 고도의 '큐레이션 서비스'이자 '품질 보증 행위'입니다.
+                        </p>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-400 mt-1">✓</span>
+                                <span>100개 샘플 중 1개만 통과하는 엄격한 기준</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-400 mt-1">✓</span>
+                                <span>색상값(Lab값) 0.1 차이도 감지하는 측색계 검증</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-400 mt-1">✓</span>
+                                <span>점도 0.5cp 오차 시 즉시 폐기</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-green-400 mt-1">✓</span>
+                                <span>알러지 프리 향료만 사용 (피부 민감성 고려)</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 pt-6 border-t border-slate-700">
+                            <p class="text-xs text-slate-400 font-mono">
+                                REJECTION RATE: 99.0% | BATCH CONSISTENCY: ±0.3%
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pixie Side -->
+                <div class="bg-gradient-to-br from-pink-500 to-purple-500 text-white p-8 rounded-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 text-[200px] font-black opacity-10">✨</div>
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-2xl">
+                                ✨
+                            </div>
+                            <h3 class="text-3xl font-black">PIXIE</h3>
+                        </div>
+                        <p class="text-pink-50 mb-6 leading-relaxed">
+                            <strong class="text-white">마법 같은 경험 (Pixie)</strong>은 엄격한 과정 끝에 탄생한 
+                            결과물이 주는 가벼움, 즐거움, 그리고 변화의 마법입니다.
+                        </p>
+                        <ul class="space-y-3 text-sm text-pink-50">
+                            <li class="flex items-start gap-2">
+                                <span class="text-white mt-1">✓</span>
+                                <span>바르는 순간 사라지는 Weightless 텍스처</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-white mt-1">✓</span>
+                                <span>홀로그램 패키징의 몽환적 언박싱 경험</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-white mt-1">✓</span>
+                                <span>이중층(Bi-phase) 비주얼의 시각적 즐거움</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-white mt-1">✓</span>
+                                <span>현미경으로 본 요정 날개 같은 입자 구조</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 pt-6 border-t border-pink-400">
+                            <p class="text-xs text-pink-100 font-mono">
+                                USER DELIGHT INDEX: 98% | TEXTURE RATING: 4.9/5.0
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Story -->
+            <div class="bg-slate-50 p-8 md:p-12 rounded-2xl border-2 border-slate-200">
+                <blockquote class="text-lg md:text-xl text-slate-700 leading-relaxed italic text-center max-w-4xl mx-auto">
+                    "세상은 타협을 '효율'이라 부르고, 적당함을 '가성비'라 포장합니다. 
+                    하지만 우리는 그것을 '포기'라고 부릅니다. 
+                    피키픽시는 믿습니다. <strong class="text-slate-900 not-italic">진정한 마법은 지팡이가 아니라, 
+                    현미경 끝에서 탄생한다고.</strong>"
+                </blockquote>
+                <div class="text-center mt-6">
+                    <span class="text-sm text-slate-500 font-mono">— PikiPixi Manifesto, 2025</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="py-20 px-4 bg-gradient-to-b from-white to-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black mb-4">런칭 라인업</h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                    리브인 컨디셔너와 오일 미스트는 2025년 헤어 케어 시장의 
+                    <strong>"피부화(Skinification)"</strong> 트렌드에 최적화된 제품입니다.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Product 1: Leave-in Conditioner -->
+                <div class="bg-white rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-pink-500 transition-all duration-300 hover:shadow-2xl">
+                    <div class="relative h-80 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center overflow-hidden">
+                        <!-- Product visualization -->
+                        <div class="relative z-10">
+                            <div class="w-32 h-56 bg-white rounded-3xl shadow-2xl relative">
+                                <div class="absolute inset-0 holographic opacity-20 rounded-3xl"></div>
+                                <div class="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-pink-200 to-transparent rounded-t-3xl"></div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-6xl">💧</span>
+                                </div>
+                                <div class="absolute bottom-4 left-0 right-0 text-center">
+                                    <div class="text-xs font-mono font-bold text-slate-600">BATCH #001</div>
+                                    <div class="text-[8px] font-mono text-slate-400">TEST: 100/100</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                        <div class="absolute top-4 right-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            BEST SELLER
+                        </div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="mb-4">
+                            <div class="text-sm text-pink-500 font-bold mb-2">LEAVE-IN CONDITIONER</div>
+                            <h3 class="text-2xl font-black mb-2">밀크 플루이드 리브인 컨디셔너</h3>
+                            <p class="text-sm text-slate-500">Milk Fluid Leave-in Conditioner | 150ml</p>
+                        </div>
+
+                        <div class="mb-6">
+                            <p class="text-slate-700 leading-relaxed mb-4">
+                                크림과 워터의 중간 제형인 <strong>'밀크 플루이드'</strong> 텍스처. 
+                                아베다보다 가볍고 모로칸오일보다 산뜻합니다.
+                            </p>
+                            <div class="bg-pink-50 p-4 rounded-lg border border-pink-100">
+                                <div class="text-xs font-bold text-pink-600 mb-2">핵심 메시지</div>
+                                <p class="text-sm text-slate-700 italic">
+                                    "바르는 순간 사라지지만 부드러움은 남는다"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specs -->
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700">보이지 않는 보호막 (Invisible Shield)</span>
+                                    <span class="text-pink-500 font-mono">95%</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-pink-500 to-purple-500" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700">Non-greasy (떡지지 않음)</span>
+                                    <span class="text-pink-500 font-mono">98%</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-pink-500 to-purple-500" style="width: 98%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700">72시간 수분 지속</span>
+                                    <span class="text-pink-500 font-mono">89%</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-pink-500 to-purple-500" style="width: 89%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="mb-6">
+                            <div class="text-xs font-bold text-slate-400 uppercase mb-3">검증된 성분</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">비건 세라마이드</span>
+                                <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">발효 오일</span>
+                                <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">히알루론산</span>
+                                <span class="px-3 py-1 bg-pink-100 text-pink-600 text-xs rounded-full font-bold">✨ 펄 파우더</span>
+                            </div>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-200">
+                            <div>
+                                <div class="text-2xl font-black">₩39,000</div>
+                                <div class="text-xs text-slate-500">스몰 럭셔리 가격대</div>
+                            </div>
+                            <button class="px-6 py-3 bg-slate-900 text-white rounded-lg font-bold hover:bg-pink-500 transition">
+                                구매하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2: Oil Mist -->
+                <div class="bg-white rounded-2xl overflow-hidden border-2 border-slate-200 hover:border-amber-500 transition-all duration-300 hover:shadow-2xl">
+                    <div class="relative h-80 bg-gradient-to-br from-amber-50 to-pink-50 flex items-center justify-center overflow-hidden">
+                        <!-- Product visualization -->
+                        <div class="relative z-10">
+                            <div class="w-24 h-56 bg-white rounded-full shadow-2xl relative overflow-hidden">
+                                <div class="absolute inset-0 holographic opacity-10"></div>
+                                <!-- Bi-phase effect -->
+                                <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-pink-200 to-pink-100"></div>
+                                <div class="absolute inset-x-0 top-24 h-8 bg-gradient-to-b from-transparent to-transparent"></div>
+                                <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-amber-200 to-amber-100"></div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-4xl">✨</span>
+                                </div>
+                                <div class="absolute bottom-4 left-0 right-0 text-center">
+                                    <div class="text-[10px] font-mono font-bold text-slate-600">BI-PHASE</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                        <div class="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            NEW ARRIVAL
+                        </div>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="mb-4">
+                            <div class="text-sm text-amber-500 font-bold mb-2">BI-PHASE OIL MIST</div>
+                            <h3 class="text-2xl font-black mb-2">프리즘 오일 미스트</h3>
+                            <p class="text-sm text-slate-500">Prism Oil Mist | 100ml</p>
+                        </div>
+
+                        <div class="mb-6">
+                            <p class="text-slate-700 leading-relaxed mb-4">
+                                투명한 수분층(Science)과 반짝이는 오일층(Magic)이 분리되어 있다가 
+                                흔들면 섞이는 <strong>'이중층(Bi-phase)'</strong> 제형.
+                            </p>
+                            <div class="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                                <div class="text-xs font-bold text-amber-600 mb-2">핵심 메시지</div>
+                                <p class="text-sm text-slate-700 italic">
+                                    "향수는 머릿결을 망치고, 오일은 스타일을 망칩니다. 
+                                    피키픽시는 그 둘의 완벽한 공존입니다."
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specs -->
+                        <div class="space-y-4 mb-6">
+                            <div>
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700">즉각적 윤기 (Instant Shine)</span>
+                                    <span class="text-amber-500 font-mono">97%</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-amber-500 to-pink-500" style="width: 97%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700">Weightless (무게감 없음)</span>
+                                    <span class="text-amber-500 font-mono">96%</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-amber-500 to-pink-500" style="width: 96%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-2">
+                                    <span class="font-bold text-slate-700">향 지속력 (6시간)</span>
+                                    <span class="text-amber-500 font-mono">92%</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-amber-500 to-pink-500" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="mb-6">
+                            <div class="text-xs font-bold text-slate-400 uppercase mb-3">검증된 성분</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">아르간 오일</span>
+                                <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">호호바 오일</span>
+                                <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full">식물성 스쿠알란</span>
+                                <span class="px-3 py-1 bg-amber-100 text-amber-600 text-xs rounded-full font-bold">🌿 알러지 프리 향료</span>
+                            </div>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="flex items-center justify-between pt-6 border-t border-slate-200">
+                            <div>
+                                <div class="text-2xl font-black">₩45,000</div>
+                                <div class="text-xs text-slate-500">선물용 최적 가격대</div>
+                            </div>
+                            <button class="px-6 py-3 bg-slate-900 text-white rounded-lg font-bold hover:bg-amber-500 transition">
+                                구매하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Rejection Board -->
+    <section id="science" class="py-20 px-4 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black mb-4">The Rejection Board</h2>
+                <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-6">
+                    성공담이 아닌 <strong class="text-white">실패담</strong>을 공유합니다. 
+                    100개의 샘플 중 99개가 탈락한 이유를 투명하게 공개합니다.
+                </p>
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-500/20 border border-red-500 rounded-lg">
+                    <span class="text-red-400 font-mono text-sm">REJECTION RATE: 99.0%</span>
+                    <span class="text-slate-400">|</span>
+                    <span class="text-slate-300 font-mono text-sm">99 REJECTED / 1 APPROVED</span>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <button class="rejection-filter-btn active px-5 py-2 rounded-full bg-slate-700 text-white font-bold text-sm transition" data-category="all">
+                    전체 (99)
+                </button>
+                <button class="rejection-filter-btn px-5 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-bold text-sm transition hover:bg-slate-700" data-category="texture">
+                    텍스처 (28)
+                </button>
+                <button class="rejection-filter-btn px-5 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-bold text-sm transition hover:bg-slate-700" data-category="scent">
+                    향료 (24)
+                </button>
+                <button class="rejection-filter-btn px-5 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-bold text-sm transition hover:bg-slate-700" data-category="color">
+                    색상 (18)
+                </button>
+                <button class="rejection-filter-btn px-5 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 font-bold text-sm transition hover:bg-slate-700" data-category="performance">
+                    성능 (29)
+                </button>
+            </div>
+
+            <!-- Rejection Timeline -->
+            <div class="mb-12 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-xl font-black mb-6 flex items-center gap-3">
+                    <span>📅</span>
+                    <span>개발 타임라인 (2024.03 - 2024.12)</span>
+                </h3>
+                <div class="relative">
+                    <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-red-500 via-amber-500 to-green-500"></div>
+                    <div class="space-y-6 relative">
+                        <div class="flex items-start gap-4">
+                            <div class="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center font-mono font-bold flex-shrink-0 border-4 border-slate-900">
+                                #1-30
+                            </div>
+                            <div class="flex-1 bg-slate-800 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold">Phase 1: 기초 포뮬러 테스트</h4>
+                                    <span class="text-xs text-slate-500 font-mono">2024.03-04</span>
+                                </div>
+                                <p class="text-sm text-slate-400">30개 샘플 전체 폐기. 기본 오일 베이스 비율 문제로 떡짐 발생</p>
+                                <div class="mt-2 text-xs text-red-400 font-mono">❌ 100% REJECTION</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center font-mono font-bold flex-shrink-0 border-4 border-slate-900">
+                                #31-65
+                            </div>
+                            <div class="flex-1 bg-slate-800 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold">Phase 2: 텍스처 최적화</h4>
+                                    <span class="text-xs text-slate-500 font-mono">2024.05-07</span>
+                                </div>
+                                <p class="text-sm text-slate-400">35개 샘플 중 3개 후보 발굴. 그러나 향 안정성 테스트 미달로 최종 탈락</p>
+                                <div class="mt-2 text-xs text-amber-400 font-mono">⚠️ 3 FINALISTS → REJECTED</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-16 h-16 rounded-full bg-yellow-500 flex items-center justify-center font-mono font-bold flex-shrink-0 border-4 border-slate-900">
+                                #66-99
+                            </div>
+                            <div class="flex-1 bg-slate-800 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold">Phase 3: 향료 & 안정성 개선</h4>
+                                    <span class="text-xs text-slate-500 font-mono">2024.08-11</span>
+                                </div>
+                                <p class="text-sm text-slate-400">34개 샘플 테스트. #93-#99까지 근접했으나 미세한 차이로 연속 탈락</p>
+                                <div class="mt-2 text-xs text-yellow-400 font-mono">⚡ SO CLOSE YET SO FAR</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center font-mono font-bold flex-shrink-0 border-4 border-slate-900 animate-pulse">
+                                #100
+                            </div>
+                            <div class="flex-1 bg-gradient-to-r from-green-500/20 to-green-500/5 p-4 rounded-lg border-2 border-green-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="font-bold text-green-400">Phase 4: 완벽한 균형</h4>
+                                    <span class="text-xs text-green-400 font-mono">2024.12.15 ✓</span>
+                                </div>
+                                <p class="text-sm text-slate-300">모든 테스트 통과. Golden Sample로 지정.</p>
+                                <div class="mt-2 text-xs text-green-400 font-mono">✅ APPROVED & LOCKED</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Rejection Cards -->
+            <div id="rejectionGrid" class="grid md:grid-cols-3 gap-6 mb-12">
+                <!-- JavaScript will populate this -->
+            </div>
+
+            <div id="noRejections" class="hidden text-center py-12 text-slate-500">
+                해당 카테고리에 탈락 샘플이 없습니다.
+            </div>
+
+            <!-- Development Items -->
+            <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700">
+                <h3 class="text-2xl font-black mb-6 flex items-center gap-3">
+                    <span>🔬</span>
+                    <span>검증 도구 (Development Items)</span>
+                </h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-pink-400 mb-3">Physical Assets</h4>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-pink-400 mt-1">•</span>
+                                <span><strong>골든 샘플 아카이브:</strong> 온습도 통제 유리 캐비닛에 보관된 완벽 기준 샘플</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-pink-400 mt-1">•</span>
+                                <span><strong>휴대용 측색계:</strong> Lab값 측정으로 색상 0.1 차이 감지</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-pink-400 mt-1">•</span>
+                                <span><strong>점도계:</strong> 0.1cp 단위 점도 측정 및 기록</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-pink-400 mt-1">•</span>
+                                <span><strong>블라인드 테스트 키트:</strong> 브랜드 정보 없는 검은 용기로 플라시보 제거</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-amber-400 mb-3">Digital Systems</h4>
+                        <ul class="space-y-2 text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span><strong>피키 패널 플랫폼:</strong> 가장 까다로운 베타 테스터 커뮤니티</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span><strong>원료 추적 대시보드:</strong> 블록체인 기반 수확지-완제품 추적</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span><strong>QA 자동화 시스템:</strong> Picky 기준 이탈 시 실시간 경고</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-400 mt-1">•</span>
+                                <span><strong>Rejection 데이터베이스:</strong> 모든 탈락 사유 투명 공개</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Positioning Section -->
+    <section id="positioning" class="py-20 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black mb-4">시장 포지셔닝: Smart Luxury</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                    피키픽시는 <strong>Science(과학적 검증)</strong>와 <strong>Magic(감성적 경험)</strong>의 
+                    교차점에 위치하여 기존 시장의 공백을 공략합니다.
+                </p>
+            </div>
+
+            <!-- Positioning Map -->
+            <div class="bg-slate-50 p-8 rounded-2xl border-2 border-slate-200 mb-12">
+                <div class="chart-wrapper">
+                    <canvas id="positioningChart"></canvas>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4 mt-8">
+                    <div class="bg-white p-4 rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                            <span class="font-bold text-sm">Science 편향</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            케라스타즈, 아베다 등 - 효능은 높으나 감성 부족
+                        </p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <span class="font-bold text-sm">Magic 편향</span>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            탬버린즈, 논픽션 등 - 향은 좋으나 기능 의문
+                        </p>
+                    </div>
+                    <div class="bg-pink-50 p-4 rounded-lg border border-pink-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-3 h-3 rounded-full bg-pink-500"></div>
+                            <span class="font-bold text-sm">PikiPixi (Target)</span>
+                        </div>
+                        <p class="text-xs text-slate-700 font-medium">
+                            Science + Magic 동시 충족하는 Blue Ocean
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gap Analysis -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-slate-900 text-white p-8 rounded-2xl">
+                    <h3 class="text-xl font-black mb-4 flex items-center gap-2">
+                        <span>💡</span>
+                        <span>Gap 1: 검증된 감성</span>
+                    </h3>
+                    <p class="text-slate-300 leading-relaxed">
+                        탬버린즈나 논픽션이 '감성'에 치우쳐 기능적 신뢰가 부족한 점을 공략. 
+                        피키픽시는 이들만큼 예쁘지만, <strong class="text-white">연구실 수준의 데이터 기반 검증</strong>을 
+                        제공하여 "예쁜 쓰레기"가 아님을 증명합니다.
+                    </p>
+                </div>
+
+                <div class="bg-pink-500 text-white p-8 rounded-2xl">
+                    <h3 class="text-xl font-black mb-4 flex items-center gap-2">
+                        <span>🎯</span>
+                        <span>Gap 2: 투명한 집착</span>
+                    </h3>
+                    <p class="text-pink-50 leading-relaxed">
+                        케라스타즈나 아베다가 '완성된 결과'만을 보여줄 때, 피키픽시는 
+                        <strong class="text-white">'탈락된 99개의 샘플'</strong>을 보여줍니다. 
+                        "이래서 탈락시켰다"는 Rejection Log를 공개함으로써, 
+                        역설적으로 최종 제품에 대한 무한한 신뢰를 형성합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 lab-grid"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <h2 class="text-4xl md:text-5xl font-black mb-6">
+                피키 패널에 참여하세요
+            </h2>
+            <p class="text-xl text-pink-50 mb-8 leading-relaxed">
+                가장 예민하고 까다로운 당신의 피드백이 
+                다음 제품을 완벽하게 만듭니다.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="px-8 py-4 bg-white text-slate-900 rounded-lg font-bold text-lg hover:bg-pink-100 transition">
+                    피키 패널 신청하기
+                </button>
+                <button class="px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-bold text-lg hover:bg-white hover:text-slate-900 transition">
+                    Rejection Log 보기
+                </button>
+            </div>
+            <div class="mt-12 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+                <div>
+                    <div class="text-3xl font-black mb-2">1,247</div>
+                    <div class="text-sm text-pink-100">현재 패널 멤버</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-black mb-2">3,891</div>
+                    <div class="text-sm text-pink-100">수집된 피드백</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-black mb-2">98.2%</div>
+                    <div class="text-sm text-pink-100">만족도</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 holographic rounded-lg"></div>
+                        <span class="text-white font-black text-xl">pikipixi</span>
+                    </div>
+                    <p class="text-sm leading-relaxed">
+                        Obsessively Picky,<br/>
+                        Delightfully Pixie.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-3">제품</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-pink-400">리브인 컨디셔너</a></li>
+                        <li><a href="#" class="hover:text-pink-400">오일 미스트</a></li>
+                        <li><a href="#" class="hover:text-pink-400">출시 예정</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-3">브랜드</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-pink-400">브랜드 스토리</a></li>
+                        <li><a href="#" class="hover:text-pink-400">The Lab</a></li>
+                        <li><a href="#" class="hover:text-pink-400">Rejection Log</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-3">참여</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-pink-400">피키 패널</a></li>
+                        <li><a href="#" class="hover:text-pink-400">피드백 제출</a></li>
+                        <li><a href="#" class="hover:text-pink-400">문의하기</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-800 text-center text-sm">
+                <p>&copy; 2025 PikiPixi. All rights reserved.</p>
+                <p class="mt-2 font-mono text-xs text-slate-600">
+                    BATCH CONSISTENCY: ±0.3% | REJECTION RATE: 99.0%
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Comprehensive Rejection Data (99 samples)
+        const rejectionData = [
+            // Texture Issues (28 samples)
+            { id: 1, category: 'texture', title: '과도한 점도', desc: '점도 15.2cp로 기준치(10.0cp) 초과. 머리카락에 바를 때 무거운 느낌.', reason: 'VISCOSITY > 10.0cp', date: '2024.03.05', severity: 'high' },
+            { id: 7, category: 'texture', title: '유분감 과다', desc: '유분감 지수 8.5/10으로 떡지는 현상 발생. Weightless 컨셉과 배치.', reason: 'GREASY INDEX > 7.0', date: '2024.03.12', severity: 'high' },
+            { id: 12, category: 'texture', title: '끈적임 발생', desc: '손에 묻은 제품이 30초 후에도 흡수되지 않음. 불쾌한 촉감.', reason: 'STICKINESS TEST FAIL', date: '2024.03.18', severity: 'medium' },
+            { id: 18, category: 'texture', title: '분리 현상', desc: 'Bi-phase 제형이 5분 내 재분리. 흔들어도 균질하게 섞이지 않음.', reason: 'PHASE SEPARATION < 5MIN', date: '2024.04.02', severity: 'high' },
+            { id: 23, category: 'texture', title: '점도 불균일', desc: '배치 내 점도 편차 ±1.2cp. 일관성 기준(±0.3cp) 미달.', reason: 'BATCH VARIANCE > ±0.3cp', date: '2024.04.15', severity: 'critical' },
+            { id: 29, category: 'texture', title: '흡수 속도 지연', desc: '모발 흡수 시간 45초. 기준 15초 대비 3배 느림.', reason: 'ABSORPTION TIME > 15s', date: '2024.04.28', severity: 'medium' },
+            { id: 34, category: 'texture', title: '필름감 형성', desc: '건조 후 모발 표면에 플라스틱 같은 코팅감. 자연스러움 부족.', reason: 'FILM FORMATION DETECTED', date: '2024.05.08', severity: 'high' },
+            { id: 38, category: 'texture', title: '크림화 현상', desc: '실온 보관 시 유화 상태 깨짐. 크림 덩어리 생성.', reason: 'EMULSION BREAKDOWN', date: '2024.05.19', severity: 'critical' },
+            { id: 45, category: 'texture', title: '수분 증발 과다', desc: '개봉 2주 후 점도 1.8cp 증가. 안정성 기준 미달.', reason: 'MOISTURE LOSS > 5%', date: '2024.06.03', severity: 'high' },
+            { id: 51, category: 'texture', title: '펌핑 불량', desc: '디스펜서에서 균일하게 나오지 않음. 사용성 저해.', reason: 'PUMP CONSISTENCY FAIL', date: '2024.06.18', severity: 'medium' },
+            { id: 56, category: 'texture', title: '이중층 비율 오류', desc: 'Oil:Water 비율 35:65. 황금비율(30:70) 벗어남.', reason: 'BI-PHASE RATIO OFF', date: '2024.07.02', severity: 'medium' },
+            { id: 62, category: 'texture', title: '온도 민감성', desc: '25°C 이하에서 점도 급증. 계절별 일관성 부족.', reason: 'TEMP SENSITIVITY HIGH', date: '2024.07.16', severity: 'high' },
+            { id: 68, category: 'texture', title: '미스트 입자 크기', desc: '분무 입자 직경 150μm. 기준(80-100μm) 초과로 떡짐.', reason: 'PARTICLE SIZE > 100μm', date: '2024.08.05', severity: 'critical' },
+            { id: 73, category: 'texture', title: '텍스처 변화', desc: '개봉 1개월 후 점도 12% 감소. 신선도 유지 실패.', reason: 'VISCOSITY DRIFT > 5%', date: '2024.08.22', severity: 'high' },
+            { id: 78, category: 'texture', title: '거품 생성', desc: '흔들 때 과도한 거품 발생. 사용감 저하.', reason: 'FOAM FORMATION DETECTED', date: '2024.09.08', severity: 'low' },
+            { id: 82, category: 'texture', title: '잔여물 발생', desc: '모발 건조 후 백색 잔여물. 미관상 문제.', reason: 'WHITE RESIDUE FOUND', date: '2024.09.21', severity: 'medium' },
+            { id: 87, category: 'texture', title: '점도 기준 미달', desc: '끈적임 지수가 기준치보다 0.5cp 높아서 탈락.', reason: 'VISCOSITY +0.5cp OVER', date: '2024.10.05', severity: 'high' },
+            { id: 90, category: 'texture', title: '유화 안정성', desc: '48시간 후 층분리. 장기 안정성 테스트 실패.', reason: '48H STABILITY FAIL', date: '2024.10.18', severity: 'critical' },
+            { id: 94, category: 'texture', title: '스프레이 패턴', desc: '분사 각도 불균일. 한쪽으로 치우침.', reason: 'SPRAY PATTERN UNEVEN', date: '2024.11.02', severity: 'medium' },
+            { id: 96, category: 'texture', title: '점성 회복 지연', desc: '사용 후 점도 회복에 24시간 소요. 너무 느림.', reason: 'THIXOTROPY RECOVERY SLOW', date: '2024.11.12', severity: 'low' },
+            { id: 3, category: 'texture', title: '오일 과다', desc: '오일 함량 45%로 과다. 가벼움 상실.', reason: 'OIL CONTENT > 35%', date: '2024.03.08', severity: 'high' },
+            { id: 14, category: 'texture', title: '수분감 부족', desc: '보습력 테스트 결과 60%. 기준 85% 미달.', reason: 'MOISTURE RETENTION < 85%', date: '2024.03.25', severity: 'medium' },
+            { id: 26, category: 'texture', title: '퍼짐성 불량', desc: '손바닥에서의 확산 속도 느림. 사용량 증가.', reason: 'SPREADABILITY LOW', date: '2024.04.20', severity: 'medium' },
+            { id: 41, category: 'texture', title: '침전물 발생', desc: '병 바닥에 미세 침전물 관찰. 품질 의심.', reason: 'SEDIMENT DETECTED', date: '2024.05.28', severity: 'high' },
+            { id: 53, category: 'texture', title: '건조 후 빡빡함', desc: '모발 건조 후 뻣뻣한 느낌. 부드러움 결여.', reason: 'POST-DRY STIFFNESS', date: '2024.06.25', severity: 'high' },
+            { id: 64, category: 'texture', title: '중량 오차', desc: '충진량 편차 ±3ml. 기준(±1ml) 초과.', reason: 'FILL WEIGHT VARIANCE HIGH', date: '2024.07.22', severity: 'low' },
+            { id: 75, category: 'texture', title: '거품 안정성', desc: '거품이 5분 후에도 소멸 안 됨. 불쾌감.', reason: 'FOAM PERSISTENCE > 2MIN', date: '2024.08.28', severity: 'low' },
+            { id: 84, category: 'texture', title: '재질감 불일치', desc: '블라인드 테스트에서 \'크림 같다\'는 평가. 밀크 플루이드 아님.', reason: 'TEXTURE PERCEPTION OFF', date: '2024.09.28', severity: 'medium' },
+
+            // Scent Issues (24 samples)
+            { id: 2, category: 'scent', title: '향 지속력 부족', desc: '도포 후 2.5시간 만에 향 소실. 기준 6시간 미달.', reason: 'LONGEVITY < 6H', date: '2024.03.06', severity: 'high' },
+            { id: 9, category: 'scent', title: '향 강도 과다', desc: '향 농도 8/10으로 압도적. 두통 유발 가능성.', reason: 'SCENT INTENSITY > 6/10', date: '2024.03.14', severity: 'critical' },
+            { id: 15, category: 'scent', title: '알러지 성분 검출', desc: '리모넨 0.8% 함유. 알러지 프리 기준(< 0.5%) 위반.', reason: 'ALLERGEN > 0.5%', date: '2024.03.28', severity: 'critical' },
+            { id: 21, category: 'scent', title: '향 변질', desc: '개봉 2주 후 산패취 발생. 안정성 문제.', reason: 'SCENT OXIDATION', date: '2024.04.10', severity: 'high' },
+            { id: 27, category: 'scent', title: '합성 냄새', desc: '블라인드 테스트 결과 \'화학 냄새\' 지적. 천연감 부족.', reason: 'SYNTHETIC PERCEPTION', date: '2024.04.24', severity: 'medium' },
+            { id: 33, category: 'scent', title: '향 불균형', desc: '탑-미들-베이스 노트 조화 실패. Top note 과다.', reason: 'NOTE IMBALANCE', date: '2024.05.06', severity: 'medium' },
+            { id: 39, category: 'scent', title: '향 확산 부족', desc: '1m 거리에서 향 감지 불가. 은은함 초과.', reason: 'DIFFUSION WEAK', date: '2024.05.21', severity: 'low' },
+            { id: 42, category: 'scent', title: '향 지속력 부족', desc: '3시간 만에 향이 날아가서 폐기.', reason: 'SCENT LONGEVITY < 6H', date: '2024.05.30', severity: 'high' },
+            { id: 48, category: 'scent', title: '계절감 부재', desc: '여름용 시트러스 향 의도했으나 무거운 플로럴 느낌.', reason: 'SEASONAL MISMATCH', date: '2024.06.12', severity: 'medium' },
+            { id: 54, category: 'scent', title: '향료 분리', desc: 'Bi-phase에서 향료가 수분층에만 집중. 균질성 실패.', reason: 'FRAGRANCE SEPARATION', date: '2024.06.27', severity: 'high' },
+            { id: 59, category: 'scent', title: '향 잔류 과다', desc: '베개에 향이 8시간 잔류. 과도한 지속성.', reason: 'RESIDUAL SCENT > 4H', date: '2024.07.10', severity: 'medium' },
+            { id: 65, category: 'scent', title: '광 산화', desc: '햇빛 노출 시 향 변색 및 변질. UV 안정성 부족.', reason: 'UV INSTABILITY', date: '2024.07.25', severity: 'high' },
+            { id: 70, category: 'scent', title: '타겟 불일치', desc: 'Gen Z 선호 조사 결과 최하위. 올드 페션 느낌.', reason: 'TARGET DEMOGRAPHIC FAIL', date: '2024.08.12', severity: 'critical' },
+            { id: 76, category: 'scent', title: '향 레이어링 실패', desc: '기존 헤어 제품과 충돌. 복합 사용 시 불쾌취.', reason: 'LAYERING INCOMPATIBLE', date: '2024.09.02', severity: 'medium' },
+            { id: 80, category: 'scent', title: '베이스 노트 부족', desc: '향이 빨리 날아감. 깊이감 결여.', reason: 'BASE NOTE WEAK', date: '2024.09.15', severity: 'medium' },
+            { id: 85, category: 'scent', title: '성별 편향', desc: '남성 패널 50%가 \'여성용\' 판정. 유니섹스 아님.', reason: 'GENDER BIAS DETECTED', date: '2024.10.01', severity: 'low' },
+            { id: 88, category: 'scent', title: '알코올 냄새', desc: '에탄올 냄새가 첫 인상 지배. 마스킹 실패.', reason: 'ALCOHOL SCENT DOMINANT', date: '2024.10.12', severity: 'high' },
+            { id: 92, category: 'scent', title: '계절 변화', desc: '겨울철 향 강도 30% 감소. 온도 의존성.', reason: 'TEMP-DEPENDENT SCENT', date: '2024.10.25', severity: 'medium' },
+            { id: 95, category: 'scent', title: '향수 충돌', desc: '향수와 동시 사용 시 향 충돌. 어울리지 않음.', reason: 'PERFUME CLASH', date: '2024.11.08', severity: 'low' },
+            { id: 98, category: 'scent', title: '미들 노트 약함', desc: '1시간 후 향이 급격히 약해짐. 중간 지속력 부족.', reason: 'MIDDLE NOTE FADE FAST', date: '2024.11.20', severity: 'medium' },
+            { id: 5, category: 'scent', title: '인공 향료감', desc: '천연 향을 의도했으나 합성 느낌 강함.', reason: 'ARTIFICIAL PERCEPTION', date: '2024.03.10', severity: 'high' },
+            { id: 36, category: 'scent', title: '오일 냄새 강함', desc: '베이스 오일 냄새가 향료를 압도. 불쾌함.', reason: 'BASE OIL SMELL STRONG', date: '2024.05.14', severity: 'high' },
+            { id: 61, category: 'scent', title: '향 날아감', desc: '스프레이 후 5분 내 향 80% 소실. 즉각성 부족.', reason: 'IMMEDIATE FADE', date: '2024.07.15', severity: 'high' },
+            { id: 72, category: 'scent', title: '향 선호도 낮음', desc: '소비자 패널 테스트 만족도 52%. 기준 80% 미달.', reason: 'CONSUMER PREFERENCE < 80%', date: '2024.08.20', severity: 'critical' },
+
+            // Color Issues (18 samples)
+            { id: 4, category: 'color', title: '색상 편차', desc: 'Lab값 a* 편차 0.8. 기준(±0.3) 초과로 배치 간 색 차이.', reason: 'LAB a* VARIANCE > ±0.3', date: '2024.03.09', severity: 'critical' },
+            { id: 10, category: 'color', title: '탁한 색감', desc: '투명도 65%. 맑은 느낌 부족.', reason: 'CLARITY < 80%', date: '2024.03.16', severity: 'medium' },
+            { id: 16, category: 'color', title: '변색 발생', desc: '형광등 아래 72시간 후 황변. 광안정성 부족.', reason: 'YELLOWING AFTER 72H', date: '2024.03.30', severity: 'high' },
+            { id: 24, category: 'color', title: '홀로그램 효과 약함', desc: '빛 반사각 변화 시 색상 변화 10%. 기준 30% 미달.', reason: 'HOLOGRAPHIC EFFECT < 30%', date: '2024.04.17', severity: 'medium' },
+            { id: 30, category: 'color', title: '펄 침전', desc: '24시간 정치 시 펄 입자 바닥 침전. 흔들어도 재분산 불완전.', reason: 'PEARL SEDIMENTATION', date: '2024.04.30', severity: 'high' },
+            { id: 37, category: 'color', title: '오일층 색상 어두움', desc: 'Bi-phase 오일층이 의도한 핑크보다 어두운 로즈. 브랜드 컬러 불일치.', reason: 'OIL LAYER COLOR OFF', date: '2024.05.16', severity: 'medium' },
+            { id: 43, category: 'color', title: '색상 균일성', desc: '배치 내 색상 편차. 일부 병은 더 진함.', reason: 'BATCH COLOR INCONSISTENT', date: '2024.06.01', severity: 'high' },
+            { id: 49, category: 'color', title: '형광 반응', desc: 'UV 라이트 아래 형광 반응. 천연 이미지 저해.', reason: 'UV FLUORESCENCE', date: '2024.06.14', severity: 'low' },
+            { id: 57, category: 'color', title: '색소 분리', desc: '수분층과 오일층의 색소 교환. 컨셉 불분명.', reason: 'COLORANT MIGRATION', date: '2024.07.05', severity: 'medium' },
+            { id: 63, category: 'color', title: '온도 변색', desc: '30°C 이상에서 색상 L* 값 5% 증가. 밝아짐.', reason: 'TEMP-INDUCED COLOR SHIFT', date: '2024.07.19', severity: 'medium' },
+            { id: 69, category: 'color', title: '패키지 투과성', desc: '병 소재 투명도로 인해 색상 왜곡. 실제와 다름.', reason: 'BOTTLE DISTORTION', date: '2024.08.08', severity: 'low' },
+            { id: 77, category: 'color', title: '색상 강도 약함', desc: '희석감. 더 선명한 색 요구됨.', reason: 'COLOR INTENSITY LOW', date: '2024.09.05', severity: 'medium' },
+            { id: 81, category: 'color', title: '인공 색소감', desc: '너무 선명한 네온 핑크. 천연 이미지와 괴리.', reason: 'ARTIFICIAL COLOR PERCEPTION', date: '2024.09.18', severity: 'medium' },
+            { id: 86, category: 'color', title: '색상 페이딩', desc: '개봉 1개월 후 색상 20% 탈색. 안정성 부족.', reason: 'COLOR FADING > 10%', date: '2024.10.03', severity: 'high' },
+            { id: 93, category: 'color', title: '색상 불균일', desc: '측색계 검사 결과 Lab값 0.2 차이.', reason: 'LAB COLOR ΔE > 0.15', date: '2024.10.30', severity: 'high' },
+            { id: 97, category: 'color', title: 'b* 값 음수', desc: 'Lab 색공간에서 b* -2.1. 파란 기미. 웜톤 아님.', reason: 'LAB b* NEGATIVE', date: '2024.11.15', severity: 'medium' },
+            { id: 11, category: 'color', title: '펄 크기 과다', desc: '펄 입자 직경 500μm. 지나치게 굵어 보임.', reason: 'PEARL SIZE > 200μm', date: '2024.03.17', severity: 'low' },
+            { id: 47, category: 'color', title: '색상 분리', desc: 'Bi-phase 경계면이 흐릿함. 명확한 구분 필요.', reason: 'PHASE BOUNDARY UNCLEAR', date: '2024.06.08', severity: 'medium' },
+
+            // Performance Issues (29 samples)
+            { id: 6, category: 'performance', title: '손상모 개선 부족', desc: '표면 거칠기 개선률 12%. 목표 30% 미달.', reason: 'ROUGHNESS IMPROVEMENT < 30%', date: '2024.03.11', severity: 'critical' },
+            { id: 8, category: 'performance', title: '윤기 부족', desc: '광택도 측정 결과 45 gloss unit. 기준 70 미달.', reason: 'GLOSS < 70 GU', date: '2024.03.13', severity: 'high' },
+            { id: 13, category: 'performance', title: '정전기 방지 실패', desc: '마찰전기 측정 결과 -8kV. 기준 -3kV 초과.', reason: 'STATIC CHARGE > -3kV', date: '2024.03.22', severity: 'medium' },
+            { id: 17, category: 'performance', title: '열 보호 부족', desc: '180°C 열 노출 시 단백질 손상 45%. 기준 20% 초과.', reason: 'HEAT PROTECTION < 55%', date: '2024.04.01', severity: 'critical' },
+            { id: 19, category: 'performance', title: '빗질 개선 부족', desc: '빗 통과 저항력 감소율 8%. 목표 40% 미달.', reason: 'COMB FORCE REDUCTION < 40%', date: '2024.04.05', severity: 'high' },
+            { id: 22, category: 'performance', title: '수분 보유력 약함', desc: '24시간 후 모발 수분 15% 감소. 기준 5% 초과.', reason: 'MOISTURE RETENTION FAIL', date: '2024.04.12', severity: 'high' },
+            { id: 25, category: 'performance', title: 'pH 불안정', desc: 'pH 6.8로 기준(5.0-5.5) 벗어남. 두피 자극 우려.', reason: 'pH OUT OF RANGE', date: '2024.04.19', severity: 'critical' },
+            { id: 28, category: 'performance', title: '컬 유지 실패', desc: '컬 탄력도 4시간 후 50% 감소. 스타일링 지속력 부족.', reason: 'CURL RETENTION < 6H', date: '2024.04.26', severity: 'medium' },
+            { id: 31, category: 'performance', title: '볼륨 효과 없음', desc: '모근 볼륨 증가 5%. 목표 25% 미달.', reason: 'VOLUME BOOST < 25%', date: '2024.05.03', severity: 'low' },
+            { id: 35, category: 'performance', title: 'UV 차단 부족', desc: 'SPF 측정 결과 8. 기준 15 미달. 자외선 보호 불충분.', reason: 'SPF < 15', date: '2024.05.10', severity: 'medium' },
+            { id: 40, category: 'performance', title: '염색 보호 실패', desc: '염색 모발 색상 유지 기간 2주. 기준 6주 미달.', reason: 'COLOR PROTECTION < 6W', date: '2024.05.24', severity: 'high' },
+            { id: 44, category: 'performance', title: '단백질 흡수 불량', desc: '케라틴 침투율 18%. 목표 40% 미달.', reason: 'PROTEIN PENETRATION < 40%', date: '2024.06.02', severity: 'high' },
+            { id: 46, category: 'performance', title: '갈라진 모발 봉합 부족', desc: 'Split end 복구율 20%. 목표 60% 크게 미달.', reason: 'SPLIT END REPAIR < 60%', date: '2024.06.06', severity: 'critical' },
+            { id: 50, category: 'performance', title: '유·수분 밸런스 불량', desc: '수분:유분 비율 40:60. 이상적 70:30과 차이.', reason: 'MOISTURE:OIL IMBALANCE', date: '2024.06.16', severity: 'medium' },
+            { id: 52, category: 'performance', title: '큐티클 밀착 부족', desc: '큐티클 각도 개선률 10%. 목표 30% 미달.', reason: 'CUTICLE SMOOTHING < 30%', date: '2024.06.22', severity: 'high' },
+            { id: 55, category: 'performance', title: '항산화 효과 약함', desc: 'DPPH 라디칼 소거능 35%. 기준 70% 미달.', reason: 'ANTIOXIDANT ACTIVITY < 70%', date: '2024.06.29', severity: 'medium' },
+            { id: 58, category: 'performance', title: '모공 막힘', desc: '두피 모공 막힘 현상. 코메도제닉 테스트 실패.', reason: 'COMEDOGENIC POSITIVE', date: '2024.07.08', severity: 'critical' },
+            { id: 60, category: 'performance', title: '보습 지속 부족', desc: '72시간 수분 유지율 40%. 목표 85% 크게 미달.', reason: 'MOISTURE LOCK < 85%', date: '2024.07.12', severity: 'critical' },
+            { id: 66, category: 'performance', title: '엉킴 방지 실패', desc: '모발 마찰계수 0.45. 기준 0.25 초과. 빗질 어려움.', reason: 'FRICTION COEFFICIENT > 0.25', date: '2024.07.28', severity: 'high' },
+            { id: 67, category: 'performance', title: '탄력성 개선 부족', desc: '모발 신장률 증가 5%. 목표 20% 미달.', reason: 'ELASTICITY IMPROVEMENT < 20%', date: '2024.08.01', severity: 'medium' },
+            { id: 71, category: 'performance', title: '강도 증가 미비', desc: '모발 절단 강도 개선 8%. 목표 25% 미달.', reason: 'TENSILE STRENGTH < 25%', date: '2024.08.15', severity: 'medium' },
+            { id: 74, category: 'performance', title: '두피 진정 효과 없음', desc: '두피 홍반 감소율 5%. 목표 30% 미달.', reason: 'SCALP SOOTHING < 30%', date: '2024.08.25', severity: 'low' },
+            { id: 79, category: 'performance', title: '세정력 과다', desc: '자연 유분까지 제거. 건조함 유발.', reason: 'OVER-CLEANSING', date: '2024.09.12', severity: 'high' },
+            { id: 83, category: 'performance', title: '비듬 개선 없음', desc: '두피 각질 감소율 3%. 목표 40% 크게 미달.', reason: 'DANDRUFF REDUCTION < 40%', date: '2024.09.24', severity: 'low' },
+            { id: 89, category: 'performance', title: '모발 굵기 개선 부족', desc: '모발 직경 증가 2%. 목표 15% 미달.', reason: 'DIAMETER INCREASE < 15%', date: '2024.10.15', severity: 'low' },
+            { id: 91, category: 'performance', title: '흡수 불균형', desc: '모근과 모발 끝 흡수율 차이 40%. 불균일.', reason: 'ABSORPTION VARIANCE > 20%', date: '2024.10.22', severity: 'medium' },
+            { id: 99, category: 'performance', title: '종합 효능 부족', desc: '소비자 체감 효과 만족도 68%. 목표 90% 미달.', reason: 'CONSUMER EFFICACY < 90%', date: '2024.11.28', severity: 'critical' },
+            { id: 20, category: 'performance', title: '즉각 효과 부족', desc: '1회 사용 후 부드러움 증가 15%. 목표 40% 미달.', reason: 'IMMEDIATE EFFECT < 40%', date: '2024.04.08', severity: 'high' },
+            { id: 32, category: 'performance', title: '누적 효과 약함', desc: '4주 사용 후 개선도가 1주차와 동일. 장기 효과 없음.', reason: 'CUMULATIVE BENEFIT ABSENT', date: '2024.05.05', severity: 'medium' }
+        ];
+
+        // Rejection Board State
+        let currentRejectionFilter = 'all';
+
+        // Initialize Rejection Board
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRejectionBoard();
+            
+            // Rejection Filter Event Listeners
+            const rejectionFilterBtns = document.querySelectorAll('.rejection-filter-btn');
+            rejectionFilterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    rejectionFilterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-slate-700');
+                        b.classList.add('bg-slate-800', 'border', 'border-slate-700', 'text-slate-300');
+                    });
+                    
+                    e.target.classList.remove('bg-slate-800', 'border', 'border-slate-700', 'text-slate-300');
+                    e.target.classList.add('active', 'bg-slate-700', 'text-white');
+                    
+                    currentRejectionFilter = e.target.dataset.category;
+                    renderRejectionBoard();
+                });
+            });
+        });
+
+        // Render Rejection Board
+        function renderRejectionBoard() {
+            const rejectionGrid = document.getElementById('rejectionGrid');
+            const noRejections = document.getElementById('noRejections');
+            
+            const filtered = currentRejectionFilter === 'all' 
+                ? rejectionData 
+                : rejectionData.filter(r => r.category === currentRejectionFilter);
+            
+            if (filtered.length === 0) {
+                rejectionGrid.innerHTML = '';
+                noRejections.classList.remove('hidden');
+                return;
+            }
+            
+            noRejections.classList.add('hidden');
+            
+            // Show only first 12 for initial load, with "Load More" button
+            const displayCount = 12;
+            const toDisplay = filtered.slice(0, displayCount);
+            
+            rejectionGrid.innerHTML = toDisplay.map(rejection => createRejectionCard(rejection)).join('');
+            
+            // Add "Show More" button if there are more items
+            if (filtered.length > displayCount) {
+                rejectionGrid.innerHTML += `
+                    <div class="md:col-span-3 text-center py-8">
+                        <button onclick="showAllRejections()" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold transition">
+                            ${filtered.length - displayCount}개 더 보기
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Create Rejection Card
+        function createRejectionCard(rejection) {
+            const severityColors = {
+                'critical': 'bg-red-500',
+                'high': 'bg-orange-500',
+                'medium': 'bg-yellow-500',
+                'low': 'bg-blue-500'
+            };
+
+            const severityLabels = {
+                'critical': '치명적',
+                'high': '높음',
+                'medium': '중간',
+                'low': '낮음'
+            };
+
+            const categoryEmojis = {
+                'texture': '🧴',
+                'scent': '👃',
+                'color': '🎨',
+                'performance': '⚡'
+            };
+
+            return `
+                <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 hover:border-red-500 transition-all cursor-pointer group">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${categoryEmojis[rejection.category]}</span>
+                            <span class="${severityColors[rejection.severity]} w-2 h-2 rounded-full"></span>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-mono text-xs text-slate-500 mb-1">#${String(rejection.id).padStart(3, '0')}</div>
+                            <div class="text-xs text-slate-600">${rejection.date}</div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="font-bold text-white mb-2 group-hover:text-red-400 transition">${rejection.title}</h4>
+                    <p class="text-sm text-slate-400 mb-4 leading-relaxed">${rejection.desc}</p>
+                    
+                    <div class="pt-4 border-t border-slate-700">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs px-2 py-1 rounded ${severityColors[rejection.severity]} text-white font-bold">
+                                ${severityLabels[rejection.severity]}
+                            </span>
+                            <span class="text-xs font-mono text-red-300">${rejection.reason}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showAllRejections() {
+            const rejectionGrid = document.getElementById('rejectionGrid');
+            const filtered = currentRejectionFilter === 'all' 
+                ? rejectionData 
+                : rejectionData.filter(r => r.category === currentRejectionFilter);
+            
+            rejectionGrid.innerHTML = filtered.map(rejection => createRejectionCard(rejection)).join('');
+        }
+
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Positioning Chart
+        const ctx = document.getElementById('positioningChart');
+        if (ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: '이솝/아베다 (Science)',
+                            data: [{ x: 30, y: 85 }],
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            pointRadius: 12,
+                            pointHoverRadius: 15
+                        },
+                        {
+                            label: '케라스타즈 (Science)',
+                            data: [{ x: 40, y: 90 }],
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            pointRadius: 12,
+                            pointHoverRadius: 15
+                        },
+                        {
+                            label: '탬버린즈/논픽션 (Magic)',
+                            data: [{ x: 85, y: 40 }],
+                            backgroundColor: 'rgba(245, 158, 11, 0.6)',
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            pointRadius: 12,
+                            pointHoverRadius: 15
+                        },
+                        {
+                            label: '모로칸오일 (Balanced)',
+                            data: [{ x: 65, y: 65 }],
+                            backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            pointRadius: 10,
+                            pointHoverRadius: 13
+                        },
+                        {
+                            label: 'PIKIPIXI (Target)',
+                            data: [{ x: 88, y: 92 }],
+                            backgroundColor: 'rgba(236, 72, 153, 1)',
+                            borderColor: 'rgba(236, 72, 153, 1)',
+                            pointRadius: 18,
+                            pointHoverRadius: 22,
+                            pointStyle: 'star'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: 감성 ${context.parsed.x}, 효능 ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '감성적 경험 (Emotional/Sensory) →',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 100,
+                            grid: { color: 'rgba(100, 116, 139, 0.1)' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '과학적 검증 (Functional/Clinical) →',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            min: 0,
+                            max: 100,
+                            grid: { color: 'rgba(100, 116, 139, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
