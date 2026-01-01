@@ -122,8 +122,10 @@
                     <a href="#overview" class="hover:text-pink-500 transition">시장 개요</a>
                     <a href="#brands" class="hover:text-pink-500 transition">브랜드 탐색</a>
                     <a href="#positioning" class="hover:text-pink-500 transition">포지셔닝 맵</a>
-                    <a href="#pikipixi" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition">
-                        PikiPixi 분석
+                    <a href="#pikipixi" class="hover:text-pink-500 transition">PikiPixi 분석</a>
+                    <a href="pikipixi.html" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition flex items-center gap-2">
+                        <span>🚀</span>
+                        <span>PikiPixi 상세</span>
                     </a>
                 </div>
             </div>
@@ -473,6 +475,36 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Call to Action for Full Homepage -->
+                <div class="mt-12 text-center">
+                    <div class="bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 p-8 rounded-2xl text-white">
+                        <h3 class="text-2xl md:text-3xl font-black mb-4">PikiPixi 브랜드 전체 스토리 보기</h3>
+                        <p class="text-pink-100 mb-6 max-w-2xl mx-auto">
+                            99번의 거절 끝에 탄생한 완벽함. Rejection Board, 브랜드 철학, 제품 상세 정보를 
+                            전용 페이지에서 확인하세요.
+                        </p>
+                        <a href="pikipixi.html" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-xl font-black text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                            <span>🚀</span>
+                            <span>PikiPixi 홈페이지 방문하기</span>
+                            <span>→</span>
+                        </a>
+                        <div class="mt-6 flex flex-wrap items-center justify-center gap-8 text-sm text-pink-100">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">✓</span>
+                                <span>The Rejection Board</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">✓</span>
+                                <span>브랜드 스토리</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">✓</span>
+                                <span>제품 상세</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -657,10 +689,13 @@
                     <p class="text-sm ${descClass} leading-relaxed line-clamp-3">${brand.desc}</p>
                     ${brand.isPikiPixi ? `
                         <div class="mt-4 pt-4 border-t border-pink-300">
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between mb-4">
                                 <span class="text-sm font-bold text-pink-100">런칭 가격대</span>
                                 <span class="text-lg font-black text-white">₩39K - ₩45K</span>
                             </div>
+                            <a href="pikipixi.html" class="block w-full text-center px-4 py-3 bg-white text-pink-500 rounded-lg font-bold hover:bg-pink-50 transition-all hover:shadow-lg">
+                                전체 스토리 보기 →
+                            </a>
                         </div>
                     ` : ''}
                 </div>
